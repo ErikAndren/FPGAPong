@@ -4,6 +4,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 
 use work.Types.all;
+use work.VgaPack.all;
 
 entity VgaTestPattern is
 port (
