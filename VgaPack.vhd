@@ -2,13 +2,23 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 
+use work.Types.all;
+
 package VgaPack is 
-	constant VgaClkFreq : real := 25.175e6;
-	constant LineFreq   : real  := 31469.0;
-	constant FieldFreq  : real  := 59.94;
+	constant VgaClkFreq : integer  := 25175000;
+	constant LineFreq   : integer  := 31469;
+	constant FieldFreq  : integer  := 60; -- 59.94;
 	
+	constant HCnt : positive := VgaClkFreq / LineFreq;
+	constant HCntW : positive := bits(HCnt);
+	
+	constant VCnt : positive := VgaClkFreq / FieldFreq;
+	constant VCntW : positive := bits(VCnt);
+
 	constant VgaHFrontPorch  : positive := 8;
 	constant VgaHSync        : positive := 96;
+	constant VgaHSyncCnt     : positive := VgaHSync;
+	constant VgaHSyncCntW       : positive := bits(VgaHSyncCnt);
 	constant VgaHBackPorch   : positive := 40;
 	constant VgaHLeftBorder  : positive := 8;
 	constant VgaHVideo       : positive := 640;
@@ -22,6 +32,8 @@ package VgaPack is
 	
 	constant VgaVFrontPorch   : positive := 2;
 	constant VgaVSync         : positive := 2;
+	constant VgaVSyncCnt      : positive := VgaVSync * VgaHLine;
+	constant VgaVSyncCntW     : positive := bits(VgaVSyncCnt);
 	constant VgaVBackPorch    : positive := 25;
 	constant VgaVTopBorder    : positive := 8;
 	constant VgaVVideo        : positive := 480;
@@ -32,7 +44,6 @@ package VgaPack is
 														 VgaVTopBorder +
 														 VgaVVideo +
 														 VgaVBottomBorder;
-														 
 end package;
 	
 package body VgaPack is 
