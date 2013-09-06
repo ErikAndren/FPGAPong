@@ -12,7 +12,7 @@ port (
 	Rst_N    : in bit1;
 	--
 	Red      : in bit1;
-	Greeen   : in bit1;
+	Green   : in bit1;
 	Blue     : in bit1;
 	--
 	HSyncN   : out bit1;
@@ -80,5 +80,8 @@ begin
 	HSyncOutAssign : HSyncN <= not IncHSyncCnt;
 	VSyncOutAssign : VSyncN <= not IncVSyncCnt;
 	
+	RedFeed   : RedOut   <= Red;
+	GreenFeed : GreenOut <= Green;
+	BlueFeed  : BlueOut  <= Blue;
 end architecture;
 	

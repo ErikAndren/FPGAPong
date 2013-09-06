@@ -39,6 +39,20 @@ begin
 		Locked => open
 	);
 	
-	
+	VgaGen : entity work.VgaGenerator
+	port map (
+		Clk      => PixelClk,
+		Rst_N    => Rst_N,
+		--
+		Red      => '0', -- FIXME
+		Green    => '1', -- FIXME
+		Blue     => '0', -- FIXME
+		--
+		HSyncN   => HSyncN,
+		VSyncN   => VSyncN,
+		RedOut   => Red,
+		GreenOut => Green,
+		BlueOut  => Blue
+	);
 end architecture;		
 		
