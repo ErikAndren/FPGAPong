@@ -34,8 +34,7 @@ architecture rtl of VgaGenerator is
 	signal VSyncCnt_D  : word(VgaVSyncCntW downto 0);
 	--
 	signal InDisplayWindow_N, InDisplayWindow_D	 : bit1;
-	--
-	signal InVgaVFrontPorch : bit1;
+
 begin
 	SyncCountersAsync : process (HCnt_D, VCnt_D)
 	begin
@@ -54,7 +53,7 @@ begin
 			VCnt_N     <= (others => '0');
 			GenVSync_N <= '1';
 		end if;
-	end process;
+	end process;	
 	
 	InDisplayCalcProc : process (HCnt_D, VCnt_D)
 	begin
@@ -92,13 +91,21 @@ begin
 			HCnt_D <= HCnt_N;
 			VCnt_D <= VCnt_N;
 			InDisplayWindow_D <= InDisplayWindow_N;
-
+			
 			if IncHSyncCnt = '1' then
 				HSyncCnt_D <= HSyncCnt_D + 1;
 			end if;
 			
+			if HSyncCnt_D = VgaHSyncCnt then
+				HSyncCnt_D <= (others => '0');
+			end if;
+			
 			if IncVSyncCnt = '1' then
 				VSyncCnt_D <= VSyncCnt_D + 1;
+			end if;
+			
+			if VSyncCnt_D = VgaVSyncCnt then
+				VSyncCnt_D <= (others => '0');
 			end if;
 		end if;
 	end process;

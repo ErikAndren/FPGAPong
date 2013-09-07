@@ -12,7 +12,7 @@ package VgaPack is
 	constant HCnt       : positive := VgaClkFreq / LineFreq;
 	constant HCntW      : positive := bits(HCnt);
 	
-	constant VCnt       : positive := VgaClkFreq / FieldFreq;
+	constant VCnt       : positive := VgaClkFreq / FieldFreq;	
 	constant VCntW      : positive := bits(VCnt);
 
 	constant VgaHFrontPorch  : positive := 8;
