@@ -20,8 +20,9 @@ port (
 end entity VgaTestPattern;
 
 architecture rtl of VgaTestPattern is
-	signal PixelClk : bit1;
-	signal Rst_N    : bit1;
+	signal PixelClk   : bit1;
+	signal Rst_N      : bit1;
+	signal ARst : bit1;
 	--
 	signal Red_N, Green_N, Blue_N : bit1;
 begin
@@ -34,10 +35,11 @@ begin
 		Rst_N    => Rst_N
 	);
 	
+	ARst <= not ARst_N;
 	PixelClkPll0 : entity work.PixelClkPll
 	port map (
 		inclk0 => Clk,
-		areset => ARst_N,
+		areset => ARst,
 		c0     => PixelClk,
 		Locked => open
 	);
