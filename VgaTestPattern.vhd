@@ -22,7 +22,10 @@ end entity VgaTestPattern;
 architecture rtl of VgaTestPattern is
 	signal PixelClk : bit1;
 	signal Rst_N    : bit1;
+	--
+	signal Red_N, Green_N, Blue_N : bit1;
 begin
+
 	RstSync : entity work.ResetSync
 	port map (
 		Clk      => Clk,
@@ -38,15 +41,27 @@ begin
 		c0     => PixelClk,
 		Locked => open
 	);
-	
+
+	--
+
+	TestPatternGen : entity work.VgaTestPatternGen
+	port map (
+		Clk => PixelClk,
+		Rst_N => Rst_N,
+		--
+		Red    => Red_N,
+	   Green  => Green_N,
+	   Blue   => Blue_N
+	);
+
 	VgaGen : entity work.VgaGenerator
 	port map (
 		Clk      => PixelClk,
 		Rst_N    => Rst_N,
 		--
-		Red      => '0', -- FIXME
-		Green    => '1', -- FIXME
-		Blue     => '0', -- FIXME
+		Red      => Red_N,
+		Green    => Green_N,
+		Blue     => Blue_N,
 		--
 		HSyncN   => HSyncN,
 		VSyncN   => VSyncN,

@@ -29,6 +29,7 @@ package VgaPack is
 														VgaHLeftBorder + 
 														VgaHVideo +
 														VgaHRightBorder;
+
 	constant VgaHLineW        : positive := bits(VgaHLine);
 
 	constant VgaVFrontPorch   : positive := 2;
