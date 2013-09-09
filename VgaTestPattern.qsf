@@ -62,7 +62,7 @@ set_location_assignment PIN_N2 -to ARst_N
 set_location_assignment PIN_H6 -to Red -comment HSMC_D0
 set_location_assignment PIN_K17 -to VSyncN -comment HSMC_D16
 set_location_assignment PIN_N8 -to Blue -comment HSMC_D8
-set_location_assignment PIN_M5 -to Green -comment HSMC_D4
+set_location_assignment PIN_T1 -to Green
 set_global_assignment -name VHDL_FILE tb.vhd
 set_global_assignment -name VHDL_FILE ../Lib/ResetSync.vhd
 set_global_assignment -name VHDL_FILE VgaTestPattern.vhd
