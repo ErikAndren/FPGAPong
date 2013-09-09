@@ -33,20 +33,18 @@ architecture rtl of VgaGenerator is
 	signal InDisplayWindow_N, InDisplayWindow_D	 : bit1;
 
 begin
-	--assert HCnt = 800 report "HLine differs from 800" severity failure;
-	--		assert VCnt = 525 report "VLine differs from 525" severity failure;
 
 	SyncCountersAsync : process (HCnt_D, VCnt_D)
 	begin
 		HCnt_N     <= HCnt_D + 1;
 		VCnt_N     <= VCnt_D;
 
-		if HCnt_D = HCnt then
+		if HCnt_D = (HCnt-1) then
 			HCnt_N     <= (others => '0');
 			VCnt_N     <= VCnt_D + 1;
 	   end if;
 
-		if VCnt_D = VCnt then
+		if VCnt_D = (VCnt-1) then
 			VCnt_N     <= (others => '0');
 		end if;
 	end process;	
