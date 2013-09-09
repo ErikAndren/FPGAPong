@@ -34,7 +34,7 @@ architecture rtl of VgaGenerator is
 
 begin
 	--assert HCnt = 800 report "HLine differs from 800" severity failure;
-	--	assert VCnt = 525 report "VLine differs from 525" severity failure;
+	--		assert VCnt = 525 report "VLine differs from 525" severity failure;
 
 	SyncCountersAsync : process (HCnt_D, VCnt_D)
 	begin
