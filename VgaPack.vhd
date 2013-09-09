@@ -4,48 +4,43 @@ use ieee.std_logic_arith.all;
 
 use work.Types.all;
 
-package VgaPack is 
+package VgaPack is 	
 	constant VgaClkFreq : integer  := 25175000;
 	constant LineFreq   : integer  := 31469;
 	constant FieldFreq  : integer  := 60; -- 59.94;
-	
-	constant HCnt       : positive := VgaClkFreq / LineFreq;
-	constant HCntW      : positive := bits(HCnt);
-	
-	constant VCnt       : positive := VgaClkFreq / FieldFreq;	
-	constant VCntW      : positive := bits(VCnt);
 
-	constant VgaHFrontPorch  : positive := 8;
-	constant VgaHLeftBorder  : positive := 8;
+	constant VgaHFrontPorch  : positive := 16;
 	constant VgaHVideo       : positive := 640;
-	constant VgaHRightBorder : positive := 8;
+	constant VgaHBackPorch   : positive := 48;
+	--	
+	constant VgaHPreHSync    : positive := VgaHFrontPorch + VgaHVideo + VgaHBackPorch;	
+	--
 	constant VgaHSync        : positive := 96;
 	constant VgaHSyncCnt     : positive := VgaHSync;
 	constant VgaHSyncCntW    : positive := bits(VgaHSyncCnt);
-	constant VgaHBackPorch   : positive := 40;
-	constant VgaHLine        : positive := VgaHFrontPorch + 
-	                                       VgaHSync + 
-														VgaHBackPorch + 
-														VgaHLeftBorder + 
-														VgaHVideo +
-														VgaHRightBorder;
-
-	constant VgaHLineW        : positive := bits(VgaHLine);
-
-	constant VgaVFrontPorch   : positive := 2;
+	--
+	constant VgaHLine        : positive := VgaHPreHSync + VgaHSync;
+	constant VgaHLineW       : positive := bits(VgaHLine);
+	--
+		
+	constant VgaVFrontPorch   : positive := 11;
+	constant VgaVVideo        : positive := 480;
+	constant VgaVBackPorch    : positive := 31;
+	--
+	constant VgaVPreVSync      : positive := VgaVFrontPorch + VgaVVideo + VgaVBackPorch;
+	--
 	constant VgaVSync         : positive := 2;
+	--
 	constant VgaVSyncCnt      : positive := VgaVSync * VgaHLine;
 	constant VgaVSyncCntW     : positive := bits(VgaVSyncCnt);
-	constant VgaVBackPorch    : positive := 25;
-	constant VgaVTopBorder    : positive := 8;
-	constant VgaVVideo        : positive := 480;
-	constant VgaVBottomBorder : positive := 8;
-	constant VgaVLine         : positive := VgaVFrontPorch +
-														 VgaVSync +
-														 VgaVBackPorch +
-														 VgaVTopBorder +
-														 VgaVVideo +
-														 VgaVBottomBorder;
+	--
+	constant VgaVLine         : positive := VgaVPreVSync + VgaVSync;
+
+   constant HCnt       : positive := VgaHLine; -- 800
+	constant HCntW      : positive := bits(HCnt);
+	
+	constant VCnt       : positive := VgaVLine; -- 525	
+	constant VCntW      : positive := bits(VCnt);														 
 end package;
 	
 package body VgaPack is 

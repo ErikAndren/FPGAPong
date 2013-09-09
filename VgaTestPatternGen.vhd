@@ -33,5 +33,5 @@ begin
 
 	Red   <= Tick_D;
 	Green <= not Tick_D;
-	Blue  <= '0';
+	Blue  <= '1';
 end architecture;

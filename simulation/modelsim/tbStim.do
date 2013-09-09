@@ -33,18 +33,9 @@ view wave
 wave clipboard store
 wave create -pattern none -portmode in -language vhdl /vgatestpattern/Clk 
 wave create -pattern none -portmode in -language vhdl /vgatestpattern/ARst_N 
-wave create -pattern none -portmode out -language vhdl /vgatestpattern/HSyncN 
-wave create -pattern none -portmode out -language vhdl /vgatestpattern/VSyncN 
-wave create -pattern none -portmode out -language vhdl /vgatestpattern/Red 
-wave create -pattern none -portmode out -language vhdl /vgatestpattern/Green 
-wave create -pattern none -portmode out -language vhdl /vgatestpattern/Blue 
-wave modify -driver freeze -pattern constant -value 0 -starttime 0ns -endtime 1000ns Edit:/vgatestpattern/ARst_N 
-wave modify -driver freeze -pattern clock -initialvalue 0 -period 20ns -dutycycle 50 -starttime 0ns -endtime 1000ns Edit:/vgatestpattern/Clk 
 wave edit invert -start 66444ps -end 1000000ps Edit:/vgatestpattern/ARst_N 
-wave modify -driver freeze -pattern clock -initialvalue 0 -period 20ns -dutycycle 50 -starttime 0ns -endtime 1000000ns Edit:/vgatestpattern/Clk 
-wave modify -driver freeze -pattern clock -initialvalue 0 -period 20ns -dutycycle 50 -starttime 0ns -endtime 1000000ns Edit:/vgatestpattern/Clk 
-wave modify -driver freeze -pattern constant -value 0 -starttime 0ns -endtime 1000000ns Edit:/vgatestpattern/ARst_N 
-wave modify -driver freeze -pattern constant -value 1 -starttime 0ns -endtime 1000000ns Edit:/vgatestpattern/ARst_N 
+wave modify -driver freeze -pattern clock -initialvalue 0 -period 20ns -dutycycle 50 -starttime 0ns -endtime 3000000ns Edit:/vgatestpattern/Clk 
+wave modify -driver freeze -pattern constant -value 1 -starttime 0ns -endtime 3000000ns Edit:/vgatestpattern/ARst_N 
 wave edit invert -start 0ps -end 80123ps Edit:/vgatestpattern/ARst_N 
 WaveCollapseAll -1
 wave clipboard restore
