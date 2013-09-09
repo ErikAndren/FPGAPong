@@ -6,8 +6,6 @@ use work.Types.all;
 
 package VgaPack is 	
 	constant VgaClkFreq : integer  := 25175000;
-	constant LineFreq   : integer  := 31469;
-	constant FieldFreq  : integer  := 60; -- 59.94;
 
 	constant VgaHFrontPorch  : positive := 16;
 	constant VgaHVideo       : positive := 640;
@@ -16,13 +14,10 @@ package VgaPack is
 	constant VgaHPreHSync    : positive := VgaHFrontPorch + VgaHVideo + VgaHBackPorch;	
 	--
 	constant VgaHSync        : positive := 96;
-	constant VgaHSyncCnt     : positive := VgaHSync;
-	constant VgaHSyncCntW    : positive := bits(VgaHSyncCnt);
 	--
 	constant VgaHLine        : positive := VgaHPreHSync + VgaHSync;
 	constant VgaHLineW       : positive := bits(VgaHLine);
 	--
-		
 	constant VgaVFrontPorch   : positive := 11;
 	constant VgaVVideo        : positive := 480;
 	constant VgaVBackPorch    : positive := 31;
@@ -31,15 +26,12 @@ package VgaPack is
 	--
 	constant VgaVSync         : positive := 2;
 	--
-	constant VgaVSyncCnt      : positive := VgaVSync * VgaHLine;
-	constant VgaVSyncCntW     : positive := bits(VgaVSyncCnt);
-	--
 	constant VgaVLine         : positive := VgaVPreVSync + VgaVSync;
 
    constant HCnt       : positive := VgaHLine; -- 800
 	constant HCntW      : positive := bits(HCnt);
 	
-	constant VCnt       : positive := VgaVLine; -- 525	
+	constant VCnt       : positive := VgaVLine; -- 524
 	constant VCntW      : positive := bits(VCnt);														 
 end package;
 	

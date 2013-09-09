@@ -42,11 +42,12 @@ begin
 		if HCnt_D = (HCnt-1) then
 			HCnt_N     <= (others => '0');
 			VCnt_N     <= VCnt_D + 1;
+			
+			if VCnt_D = (VCnt-1) then
+				VCnt_N     <= (others => '0');
+			end if;
 	   end if;
 
-		if VCnt_D = (VCnt-1) then
-			VCnt_N     <= (others => '0');
-		end if;
 	end process;	
 	
 	InDisplayCalcProc : process (HCnt_D, VCnt_D)
@@ -69,10 +70,10 @@ begin
 			InDisplayWindow_N <= '0';
 		end if;
 	end process;
-	
+
 	InHSync <= '1' when HCnt_D >= VgaHPreHSync else '0';
 	InVSync <= '1' when VCnt_D >= VgaVPreVSync else '0';
-	
+
 	SyncCountersSync : process(Clk, Rst_N)
 	begin
 		if Rst_N = '0' then
