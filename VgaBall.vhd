@@ -21,7 +21,7 @@ port (
 end entity;
 
 architecture rtl of VgaBall is
-begin
+begin	
 	DrawBall : process (XCord, YCord)
 	begin
 		Red   <= '0';
@@ -30,12 +30,12 @@ begin
 		
 		if (XCord >= 0 and XCord < 4 and 
 		    YCord >= 0 and YCord < 4) then
-			Red <= '1';
+			Red <= '1';	
 		end if;
 		
 		-- Draw border
 		-- Line begins at 7
-		if (XCord = 6 or XCord = 639 or
+		if (XCord = 0 or XCord = 639 or
 			 YCord = 0 or YCord = 479) then
 			Green <= '1';
 		end if;

@@ -7,10 +7,10 @@ use work.Types.all;
 package VgaPack is 	
 	constant VgaClkFreq : integer  := 25175000;
 
-	constant VgaHFrontPorch  : positive := 16;
+	constant VgaHFrontPorch  : positive := 22;
 	constant VgaHVideo       : positive := 640;
 	constant VgaHVideoW      : positive := bits(VgaHVideo);
-	constant VgaHBackPorch   : positive := 48;
+	constant VgaHBackPorch   : positive := 42;
 	--	
 	constant VgaHPreHSync    : positive := VgaHFrontPorch + VgaHVideo + VgaHBackPorch;	
 	--
