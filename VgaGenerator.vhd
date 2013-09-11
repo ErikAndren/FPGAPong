@@ -46,22 +46,22 @@ begin
 		YCord_N    <= YCord_D;
 
 		if HCnt_D = (HCnt-1) then
-			HCnt_N     <= (others => '0');
-			VCnt_N     <= VCnt_D + 1;
+			HCnt_N  <= (others => '0');
+			VCnt_N  <= VCnt_D + 1;
 			
 			if VCnt_D = (VCnt-1) then
-				VCnt_N     <= (others => '0');
+				VCnt_N <= (others => '0');
 			end if;
 	   end if;
 		
-		if (InDisplayWindow_D = '1') then
+		if InDisplayWindow_D = '1' then	
 			XCord_N <= XCord_D + 1;
 		else
 			XCord_N <= (others => '0');
 		end if;
 		
 		-- Detect edge
-		if (XCord_D = VgaHVideo) then
+		if XCord_D = VgaHVideo then
 			YCord_N <= YCord_D + 1;
 		end if;
 		
@@ -74,7 +74,7 @@ begin
 	begin
 		InDisplayWindow_N <= '1';
 
-		if (HCnt_D < VgaHfrontPorch) then
+		if (HCnt_D < VgaHFrontPorch) then
 			InDisplayWindow_N <= '0';
 		end if;
 

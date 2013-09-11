@@ -28,9 +28,16 @@ begin
 		Green <= '0';
 		Blue  <= '0';
 		
-		if (XCord >= 320 and XCord < 324 and 
-		    YCord >= 240 and YCord < 244) then
+		if (XCord >= 0 and XCord < 4 and 
+		    YCord >= 0 and YCord < 4) then
 			Red <= '1';
+		end if;
+		
+		-- Draw border
+		-- Line begins at 7
+		if (XCord = 6 or XCord = 639 or
+			 YCord = 0 or YCord = 479) then
+			Green <= '1';
 		end if;
 	end process;
 end architecture;
