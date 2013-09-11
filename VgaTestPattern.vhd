@@ -25,6 +25,9 @@ architecture rtl of VgaTestPattern is
 	signal ARst : bit1;
 	--
 	signal Red_N, Green_N, Blue_N : bit1;
+	
+	signal XCord : word(VgaHVideoW-1 downto 0);
+	signal YCord : word(VgaVVideoW-1 downto 0);
 begin
 
 	RstSync : entity work.ResetSync
@@ -46,15 +49,28 @@ begin
 
 	--
 
-	TestPatternGen : entity work.VgaTestPatternGen
-	port map (
-		Clk => PixelClk,
-		Rst_N => Rst_N,
-		--
-		Red    => Red_N,
-	   Green  => Green_N,
-	   Blue   => Blue_N
-	);
+--	TestPatternGen : entity work.VgaTestPatternGen
+--	port map (
+--		Clk => PixelClk,
+--		Rst_N => Rst_N,
+--		--
+--		Red    => Red_N,
+--	   Green  => Green_N,
+--	   Blue   => Blue_N
+--	);
+
+	Ball : entity work.VgaBall
+		port map (
+			Clk    => PixelClk,
+			Rst_N  => Rst_N,
+			--
+			XCord  => Xcord,
+			YCord  => Ycord,
+			--
+			Red    => Red_N,
+			Green  => Green_N,
+			Blue   => Blue_N
+		);
 
 	VgaGen : entity work.VgaGenerator
 	port map (
@@ -64,6 +80,9 @@ begin
 		Red      => Red_N,
 		Green    => Green_N,
 		Blue     => Blue_N,
+		--
+		XCord    => XCord,
+		YCord    => YCord,
 		--
 		HSyncN   => HSyncN,
 		VSyncN   => VSyncN,

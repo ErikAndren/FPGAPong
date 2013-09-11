@@ -9,6 +9,7 @@ package VgaPack is
 
 	constant VgaHFrontPorch  : positive := 16;
 	constant VgaHVideo       : positive := 640;
+	constant VgaHVideoW      : positive := bits(VgaHVideo);
 	constant VgaHBackPorch   : positive := 48;
 	--	
 	constant VgaHPreHSync    : positive := VgaHFrontPorch + VgaHVideo + VgaHBackPorch;	
@@ -18,9 +19,10 @@ package VgaPack is
 	constant VgaHLine        : positive := VgaHPreHSync + VgaHSync;
 	constant VgaHLineW       : positive := bits(VgaHLine);
 	--
-	constant VgaVFrontPorch   : positive := 11;
+	constant VgaVFrontPorch   : positive := 30;
 	constant VgaVVideo        : positive := 480;
-	constant VgaVBackPorch    : positive := 31;
+   constant VgaVVideoW      : positive := bits(VgaVVideo);
+	constant VgaVBackPorch    : positive := 12;
 	--
 	constant VgaVPreVSync      : positive := VgaVFrontPorch + VgaVVideo + VgaVBackPorch;
 	--

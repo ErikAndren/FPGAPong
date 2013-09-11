@@ -15,6 +15,9 @@ port (
 	Green    : in bit1;
 	Blue     : in bit1;
 	--
+	XCord    : out word(VgaHVideoW-1 downto 0);
+	YCord    : out word(VgaVVideoW-1 downto 0);
+	--
 	HSyncN   : out bit1;
 	VSyncN   : out bit1;
 	RedOut   : out bit1;
@@ -32,12 +35,15 @@ architecture rtl of VgaGenerator is
 	--
 	signal InDisplayWindow_N, InDisplayWindow_D	 : bit1;
 
+	signal XCord_N, XCord_D : word(VgaHVideoW-1 downto 0);
+	signal YCord_N, YCord_D : word(VgaVVideoW-1 downto 0);
 begin
-
-	SyncCountersAsync : process (HCnt_D, VCnt_D)
-	begin
+	SyncCountersAsync : process (HCnt_D, VCnt_D, InDisplayWindow_D, XCord_D, YCord_D)
+	begin	
 		HCnt_N     <= HCnt_D + 1;
 		VCnt_N     <= VCnt_D;
+		XCord_N    <= XCord_D;
+		YCord_N    <= YCord_D;
 
 		if HCnt_D = (HCnt-1) then
 			HCnt_N     <= (others => '0');
@@ -47,7 +53,21 @@ begin
 				VCnt_N     <= (others => '0');
 			end if;
 	   end if;
-
+		
+		if (InDisplayWindow_D = '1') then
+			XCord_N <= XCord_D + 1;
+		else
+			XCord_N <= (others => '0');
+		end if;
+		
+		-- Detect edge
+		if (XCord_D = VgaHVideo) then
+			YCord_N <= YCord_D + 1;
+		end if;
+		
+		if YCord_D = VgaVVideo then
+			YCord_N <= (others => '0');
+		end if;
 	end process;	
 	
 	InDisplayCalcProc : process (HCnt_D, VCnt_D)
@@ -84,11 +104,17 @@ begin
 			HCnt_D <= HCnt_N;
 			VCnt_D <= VCnt_N;
 			InDisplayWindow_D <= InDisplayWindow_N;
+			
+			XCord_D <= XCord_N;
+			YCord_D <= YCord_N;
 		end if;
 	end process;
 	
 	HSyncOutAssign : HSyncN <= not InHSync;
 	VSyncOutAssign : VSyncN <= not InVSync;
+	
+	XCordAssign : XCord <= XCord_D;
+	YCordAssign : YCord <= YCord_D;
 	
 	RedFeed   : RedOut   <= Red   when InDisplayWindow_D = '1' else '0';
 	GreenFeed : GreenOut <= Green when InDisplayWindow_D = '1' else '0';
