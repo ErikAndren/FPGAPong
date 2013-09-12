@@ -8,8 +8,11 @@ use work.VgaPack.all;
 
 entity VgaTestPattern is
 port (
-	Clk   : in bit1;
+	Clk    : in bit1;
 	ARst_N : in bit1;
+	--
+	Button0 : in bit1;
+	Button1 : in bit1;
 	--		
 	HSyncN : out bit1;
 	VSyncN : out bit1;
@@ -63,6 +66,9 @@ begin
 		port map (
 			Clk    => PixelClk,
 			Rst_N  => Rst_N,
+			--
+			Button0 => Button0,
+			Button1 => Button1,
 			--
 			XCord  => Xcord,
 			YCord  => Ycord,
