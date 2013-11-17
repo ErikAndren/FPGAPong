@@ -27,8 +27,8 @@ port (
 end entity VgaGenerator;
 
 architecture rtl of VgaGenerator is
-	signal HCnt_D, HCnt_N         : word(HCntW-1 downto 0);
-	signal VCnt_D, VCnt_N         : word(VCntW-1 downto 0);
+	signal HCnt_D, HCnt_N : word(HCntW-1 downto 0);
+	signal VCnt_D, VCnt_N : word(VCntW-1 downto 0);
 	--
 	signal InHSync : bit1;
 	signal InVSync : bit1;
