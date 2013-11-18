@@ -40,31 +40,42 @@ architecture rtl of VgaBall is
 	signal Paddle0XPos_N, Paddle0XPos_D : word(bits(XRes)-1 downto 0);
 	signal Paddle1XPos_N, Paddle1XPos_D : word(bits(XRes)-1 downto 0);
 	
+	signal BallXDir_N, BallXDir_D : word(2-1 downto 0);
+	signal BallYDir_N, BallYDir_D : word(2-1 downto 0);
+
 begin	
 	Sampler : process (Clk, Rst_N)
 	begin
 		if Rst_N = '0' then
-			SampleCnt_D <= (others => '0');
-			BallPosX_D  <= (others => '0');
-			BallPosY_D  <= (others => '0');
+			SampleCnt_D   <= (others => '0');
+			BallPosX_D    <= conv_word(XRes / 2, BallPosX_D'length);
+			BallPosY_D    <= conv_word(YRes / 2, BallPosY_D'length);
 			Paddle0XPos_D <= conv_word(XRes / 2, Paddle0XPos_D'length);
 			Paddle1XPos_D <= conv_word(XRes / 2, Paddle1XPos_D'length);
+			BallXDir_D    <= (others => '0');
+			BallYDir_D    <= "10";
 			
 		elsif rising_edge(Clk) then
 			SampleCnt_D <= SampleCnt_N;
 			BallPosX_D  <= BallPosX_N;
 			BallPosY_D  <= BallPosY_N;
-			
+			--
+			BallXDir_D <= BallXDir_N;
+			BallYDir_D <= BallYDir_N;
+			--
 			Paddle0XPos_D <= Paddle0XPos_N;
 			Paddle1XPos_D <= Paddle1XPos_N;
+			--
 		end if;
 	end process;
 
-	SampleAsync : process (SampleCnt_D, BallPosX_D, BallPosY_D, Button0, Button1, Paddle0XPos_D, Paddle1XPos_D)
+	SampleAsync : process (SampleCnt_D, BallPosX_D, BallPosY_D, Button0, Button1, Paddle0XPos_D, Paddle1XPos_D, BallXDir_D, BallYDir_D)
 	begin
 		BallPosX_N <= BallPosX_D;
 		BallPosY_N <= BallPosY_D;
 		SampleCnt_N <= SampleCnt_D + 1;
+		BallXDir_N <= BallXDir_D;
+		BallYDir_N <= BallYDir_D;
 		
 		Paddle0XPos_N <= Paddle0XPos_D;
 		Paddle1XPos_N <= Paddle1XPos_D;
@@ -75,17 +86,36 @@ begin
 
 		-- Only sample once per second
 		if RedOr(SampleCnt_D) = '0' then
-			BallPosX_N <= BallPosX_D + 1;
-			BallPosY_N <= BallPosY_D + 1;	
-		
+			if (BallYDir_D = "10") then
+				BallPosY_N <= BallPosY_D - 1;
+			elsif (BallYDir_D = "01") then
+				BallPosY_N <= BallPosY_D + 1;
+			end if;
+			
+			if (BallXDir_D = "10") then
+				BallPosX_N <= BallPosX_D - 1;
+			elsif (BallXDir_D = "01") then
+				BallPosX_N <= BallPosX_D + 1;
+			end if;
+			
+			if (BallPosY_D = Paddle0YPos and BallPosX_D > Paddle0XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle0XPos_D + PaddleDepth / 2) then
+				BallYDir_N <= "01";
+			elsif (BallPosY_D = Paddle1YPos and BallPosX_D > Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle1XPos_D + PaddleDepth / 2) then
+				BallYDir_N <= "10";
+			end if;
+
 			if (Button0 = '0' and Button1 = '0') then
 				null;
 				
 			elsif Button0 = '0' then
-				Paddle0XPos_N <= Paddle0XPos_D + 1;
+				if (Paddle0XPos_D < XRes-1) then
+					Paddle0XPos_N <= Paddle0XPos_D + 1;
+				end if;
 			
 			elsif Button1 = '0' then
-				Paddle0XPos_N <= Paddle0XPos_D - 1;
+				if (Paddle0XPos_D > 0) then
+					Paddle0XPos_N <= Paddle0XPos_D - 1;
+				end if;
 			end if;
 		end if;
 	end process;	
