@@ -22,13 +22,13 @@ port (
 	Blue   : out bit1
 );
 end entity;
-
+	
 architecture rtl of VgaBall is
 	signal SampleCnt_N, SampleCnt_D : word(bits(25000000)-1 downto 0);
 	signal BallPosX_D, BallPosX_N : word(VgaHVideoW-1 downto 0);
 	signal BallPosY_D, BallPosY_N : word(VgaVVideoW-1 downto 0);
 	
-	constant PaddleLen : positive := 40;
+	constant PaddleLen   : positive := 40;
 	constant PaddleDepth : positive := 4;
 	
 	constant XRes : positive := 640;
@@ -37,9 +37,8 @@ architecture rtl of VgaBall is
 	constant Paddle0YPos : positive := 10;
 	constant Paddle1YPos : positive := YRes - 10;
 	
-	
-	signal Paddle0XPos_N, Paddle0XPos_D : word(bits(YRes)-1 downto 0);
-	signal Paddle1XPos_N, Paddle1XPos_D : word(bits(YRes)-1 downto 0);
+	signal Paddle0XPos_N, Paddle0XPos_D : word(bits(XRes)-1 downto 0);
+	signal Paddle1XPos_N, Paddle1XPos_D : word(bits(XRes)-1 downto 0);
 	
 begin	
 	Sampler : process (Clk, Rst_N)
@@ -61,37 +60,37 @@ begin
 		end if;
 	end process;
 
-	SampleAsync : process (SampleCnt_D, BallPosX_D, BallPosY_D, Button0, Button1)
+	SampleAsync : process (SampleCnt_D, BallPosX_D, BallPosY_D, Button0, Button1, Paddle0XPos_D, Paddle1XPos_D)
 	begin
 		BallPosX_N <= BallPosX_D;
 		BallPosY_N <= BallPosY_D;
 		SampleCnt_N <= SampleCnt_D + 1;
 		
+		Paddle0XPos_N <= Paddle0XPos_D;
+		Paddle1XPos_N <= Paddle1XPos_D;
+		
 		if (SampleCnt_D = 250000/2) then
 			SampleCnt_N <= (others => '0');
 		end if;
+
 		-- Only sample once per second
 		if RedOr(SampleCnt_D) = '0' then
 			BallPosX_N <= BallPosX_D + 1;
 			BallPosY_N <= BallPosY_D + 1;	
 		
-			if Button0 = '0' then
-				BallPosX_N <= BallPosX_D + 1;
-				if BallPosX_D = VgaHVideo then
-					BallPosX_N <= (others => '0');
-				end if;
-			end if;
+			if (Button0 = '0' and Button1 = '0') then
+				null;
+				
+			elsif Button0 = '0' then
+				Paddle0XPos_N <= Paddle0XPos_D + 1;
 			
-			if Button1 = '0' then
-				BallPosY_N <= BallPosY_D + 1;
-				if BallPosY_D = VgaVVideo then
-					BallPosY_N <= (others => '0');
-				end if;
+			elsif Button1 = '0' then
+				Paddle0XPos_N <= Paddle0XPos_D - 1;
 			end if;
 		end if;
 	end process;	
 
-	DrawBall : process (XCord, YCord, BallPosX_D, BallPosY_D)
+	DrawBall : process (XCord, YCord, BallPosX_D, BallPosY_D, Paddle0XPos_D, Paddle1XPos_D)
 	begin
 		Red   <= '0';
 		Green <= '0';
