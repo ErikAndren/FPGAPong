@@ -37,6 +37,4 @@ begin
 	Red   <= '1' when Tick_D = "00" else '0';
 	Green <= '1' when Tick_D = "00" else '0';
 	Blue  <= '1' when Tick_D = "00" else '0';
-	
-
 end architecture;

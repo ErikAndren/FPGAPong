@@ -42,6 +42,9 @@ architecture rtl of VgaBall is
 	
 	signal BallXDir_N, BallXDir_D : word(2-1 downto 0);
 	signal BallYDir_N, BallYDir_D : word(2-1 downto 0);
+	
+	signal Player0Score_N, Player0Score_D : word(4-1 downto 0);
+	signal Player1Score_N, Player1Score_D : word(4-1 downto 0);
 
 begin	
 	Sampler : process (Clk, Rst_N)
@@ -54,6 +57,8 @@ begin
 			Paddle1XPos_D <= conv_word(XRes / 2, Paddle1XPos_D'length);
 			BallXDir_D    <= (others => '0');
 			BallYDir_D    <= "10";
+			Player0Score_D <= (others => '0');
+			Player1Score_D <= (others => '0');
 			
 		elsif rising_edge(Clk) then
 			SampleCnt_D <= SampleCnt_N;
@@ -66,16 +71,23 @@ begin
 			Paddle0XPos_D <= Paddle0XPos_N;
 			Paddle1XPos_D <= Paddle1XPos_N;
 			--
+			Player0Score_D <= Player0Score_N;
+			Player1Score_D <= Player1Score_N;
+			--
 		end if;
 	end process;
 
-	SampleAsync : process (SampleCnt_D, BallPosX_D, BallPosY_D, Button0, Button1, Paddle0XPos_D, Paddle1XPos_D, BallXDir_D, BallYDir_D)
+	SampleAsync : process (SampleCnt_D, BallPosX_D, BallPosY_D, Button0, Button1, Paddle0XPos_D, Paddle1XPos_D, BallXDir_D, BallYDir_D,
+								  Player0Score_D, Player1Score_D
+								)
 	begin
 		BallPosX_N <= BallPosX_D;
 		BallPosY_N <= BallPosY_D;
 		SampleCnt_N <= SampleCnt_D + 1;
 		BallXDir_N <= BallXDir_D;
 		BallYDir_N <= BallYDir_D;
+		Player0Score_N <= Player0Score_D;
+		Player1Score_N <= Player1Score_D;
 		
 		Paddle0XPos_N <= Paddle0XPos_D;
 		Paddle1XPos_N <= Paddle1XPos_D;
@@ -102,6 +114,29 @@ begin
 				BallYDir_N <= "01";
 			elsif (BallPosY_D = Paddle1YPos and BallPosX_D > Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle1XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "10";
+			end if;
+			
+			-- Score for player 1
+			if (BallPosY_D = 0) then
+				Player1Score_N <= Player1Score_D + 1;
+				
+				-- Reset state, give ball to losing player
+				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
+				BallPosY_N <= conv_word(YRes-20 / 2, BallPosY_N'length);
+				BallXDir_N <= "00";
+				BallYDir_N <= "10";	
+			end if;
+			
+			-- Score for player 0
+			if (BallPosY_D = YRes-1) then
+				Player0Score_N <= Player0Score_D + 1;
+				
+				-- Reset state, give ball to losing player
+				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
+				BallPosY_N <= conv_word(20, BallPosY_N'length);
+				--
+				BallXDir_N <= "00";
+				BallYDir_N <= "01";	
 			end if;
 
 			if (Button0 = '0' and Button1 = '0') then
