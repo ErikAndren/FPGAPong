@@ -28,7 +28,7 @@ architecture rtl of VgaBall is
 	signal BallPosX_D, BallPosX_N : word(VgaHVideoW-1 downto 0);
 	signal BallPosY_D, BallPosY_N : word(VgaVVideoW-1 downto 0);
 	
-	constant PaddleLen   : positive := 40;
+	constant PaddleWidth   : positive := 40;
 	constant PaddleDepth : positive := 4;
 	
 	constant XRes : positive := 640;
@@ -98,9 +98,9 @@ begin
 				BallPosX_N <= BallPosX_D + 1;
 			end if;
 			
-			if (BallPosY_D = Paddle0YPos and BallPosX_D > Paddle0XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle0XPos_D + PaddleDepth / 2) then
+			if (BallPosY_D = Paddle0YPos and BallPosX_D > Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D < Paddle0XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "01";
-			elsif (BallPosY_D = Paddle1YPos and BallPosX_D > Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle1XPos_D + PaddleDepth / 2) then
+			elsif (BallPosY_D = Paddle1YPos and BallPosX_D > Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle1XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "10";
 			end if;
 
@@ -108,12 +108,12 @@ begin
 				null;
 				
 			elsif Button0 = '0' then
-				if (Paddle0XPos_D < XRes-1) then
+				if (Paddle0XPos_D < XRes-PaddleWidth / 2) then
 					Paddle0XPos_N <= Paddle0XPos_D + 1;
 				end if;
 			
 			elsif Button1 = '0' then
-				if (Paddle0XPos_D > 0) then
+				if (Paddle0XPos_D > PaddleWidth / 2) then
 					Paddle0XPos_N <= Paddle0XPos_D - 1;
 				end if;
 			end if;
@@ -131,11 +131,11 @@ begin
 			Red <= '1';	
 		end if;
 		
-		if ((YCord > (Paddle0YPos - PaddleDepth / 2) and YCord < (Paddle0YPos + PaddleDepth / 2)) and (XCord > (Paddle0XPos_D - PaddleLen / 2) and XCord < (Paddle0XPos_D + PaddleLen / 2))) then
+		if ((YCord > (Paddle0YPos - PaddleDepth / 2) and YCord < (Paddle0YPos + PaddleDepth / 2)) and (XCord > (Paddle0XPos_D - PaddleWidth / 2) and XCord < (Paddle0XPos_D + PaddleWidth / 2))) then
 			Green <= '1';
 		end if;
 		
-		if ((YCord > (Paddle1YPos - PaddleDepth / 2) and YCord < (Paddle1YPos + PaddleDepth / 2)) and (XCord > (Paddle1XPos_D - PaddleLen / 2) and XCord < (Paddle1XPos_D + PaddleLen / 2))) then
+		if ((YCord > (Paddle1YPos - PaddleDepth / 2) and YCord < (Paddle1YPos + PaddleDepth / 2)) and (XCord > (Paddle1XPos_D - PaddleWidth / 2) and XCord < (Paddle1XPos_D + PaddleWidth / 2))) then
 			Blue <= '1';
 		end if;
 	end process;
