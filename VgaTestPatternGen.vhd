@@ -26,11 +26,9 @@ begin
 	process (Clk, Rst_N)
 	begin
 		if Rst_N = '0' then	
-			
 			Tick_D <= (others => '0');
 		elsif rising_edge(Clk) then
 			Tick_D <= Tick_N;
-		
 		end if;
 	end process;
 
