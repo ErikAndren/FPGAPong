@@ -31,8 +31,18 @@ package CharPack is
 												("00011000"),
 												("00111100")
 									      	);
+												
+	constant MyCharTwo : MyChar :=  (("00011000"),
+								 	         ("00100100"),
+									      	("01000010"),
+									      	("00000100"),
+												("00001000"),
+												("00010000"),
+												("00100000"),
+												("01111110")
+									      	);
 
-	constant MyCharSet : MyCharArr(0 to 2-1) := (MyCharZero, MyCharOne);
+	constant MyCharSet : MyCharArr(0 to 3-1) := (MyCharZero, MyCharOne, MyCharTwo);
 
 end package;
 
