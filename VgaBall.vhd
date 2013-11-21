@@ -128,7 +128,11 @@ begin
 			
 			-- Score for player 1
 			if (BallPosY_D = 0) then
-				Player1Score_N <= Player1Score_D + 1;
+				if (Player1Score_D >= 9) then
+					Player1Score_N <= (others => '0');
+				else
+					Player1Score_N <= Player1Score_D + 1;
+				end if;
 				
 				-- Reset state, give ball to losing player
 				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
@@ -139,7 +143,11 @@ begin
 			
 			-- Score for player 0
 			if (BallPosY_D = YRes-1) then
-				Player0Score_N <= Player0Score_D + 1;
+				if Player0Score_D >= 9 then
+					Player0Score_N <= (others => '0');
+				else
+					Player0Score_N <= Player0Score_D + 1;
+				end if;
 				
 				-- Reset state, give ball to losing player
 				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
