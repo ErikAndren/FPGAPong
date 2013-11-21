@@ -13,8 +13,8 @@ port (
 	--
 	Button0      : in bit1;
 	Button1      : in bit1;
-	Button2 : in bit1;
-	Button3  : in bit1;
+	Button2      : in bit1;
+	Button3      : in bit1;
 	--		
 	HSyncN : out bit1;
 	VSyncN : out bit1;

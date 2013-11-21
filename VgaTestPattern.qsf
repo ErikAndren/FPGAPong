@@ -95,8 +95,8 @@ set_global_assignment -name VHDL_FILE VgaBall.vhd
 set_location_assignment PIN_F1 -to Button0
 set_location_assignment PIN_F2 -to Button1
 set_global_assignment -name VHDL_FILE CharPack.vhd
-set_location_assignment PIN_A10 -to Button3
-set_location_assignment PIN_B10 -to Button2
+set_location_assignment PIN_B10 -to Button3
+set_location_assignment PIN_A10 -to Button2
 set_global_assignment -name SAVE_DISK_SPACE OFF
 set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS OFF
 set_global_assignment -name SMART_RECOMPILE ON
