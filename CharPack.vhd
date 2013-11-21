@@ -62,22 +62,60 @@ package CharPack is
 												 ("00000010")
 									      	 );
 												 
---												 (("00000000"),
---								 	          ("00000000"),
---									       	 ("00000000"),
---									      	 ("00000000"),
---												 ("00000000"),
---												 ("00000000"),
---												 ("00000000"),
---												 ("00000000")
---									      	 );
+	constant MyCharFive : MyChar :=  (("01111110"),
+								 	          ("01000000"),
+									       	 ("01000000"),
+									      	 ("01111110"),
+												 ("00000010"),
+												 ("00000010"),
+												 ("00000010"),
+												 ("01111110")
+									      	 );
+												 
+	constant MyCharSix  : MyChar :=  (("00011110"),
+								 	          ("00100000"),
+									       	 ("01000000"),
+									      	 ("01000000"),
+      										 ("01111110"),
+												 ("01000010"),
+												 ("01000010"),
+												 ("01111110")
+									      	 );
 
 
-	constant MyCharSet : MyCharArr(0 to 4) := (MyCharZero, MyCharOne, MyCharTwo, MyCharThree, MyCharFour);
+	constant MyCharSeven  : MyChar :=(("01111110"),
+								 	          ("00000010"),
+									       	 ("00000010"),
+									      	 ("00000010"),
+												 ("00000010"),
+												 ("00000010"),
+												 ("00000010"),
+												 ("00000010")
+									      	 );
+					
+  constant MyCharEight  : MyChar := (("00111100"),
+								 	          ("01000010"),
+									       	 ("01000010"),
+									      	 ("01000010"),
+												 ("01111110"),
+												 ("01000010"),
+												 ("01000010"),
+												 ("00111100")
+									      	 );	
+	
+	constant MyCharNine  : MyChar := (("00111100"),
+								 	          ("01000010"),
+									       	 ("01000010"),
+									      	 ("01000010"),
+												 ("01111110"),
+												 ("00000010"),
+												 ("00000010"),
+												 ("00111100")
+									      	 );
+	
 
+	constant MyCharSet : MyCharArr(0 to 9) := (MyCharZero, MyCharOne, MyCharTwo, MyCharThree, MyCharFour, MyCharFive, MyCharSix, MyCharSeven, MyCharEight, MyCharNine);
 end package;
 
 package body CharPack is
-
-
 end package body;
