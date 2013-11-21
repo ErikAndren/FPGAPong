@@ -13,8 +13,10 @@ port (
 	Clk    : in bit1;
 	Rst_N  : in bit1;
 	--
-	Button0 : in bit1;
-	Button1 : in bit1;
+	Player0Right : in bit1;
+	Player0Left  : in bit1;
+	Player1Right : in bit1;
+	Player1Left : in bit1;
 	--
 	XCord  : in word(VgaHVideoW-1 downto 0);		
 	YCord  : in word(VgaVVideoW-1 downto 0);
@@ -85,7 +87,7 @@ begin
 		end if;
 	end process;
 
-	SampleAsync : process (SampleCnt_D, BallPosX_D, BallPosY_D, Button0, Button1, Paddle0XPos_D, Paddle1XPos_D, BallXDir_D, BallYDir_D,
+	SampleAsync : process (SampleCnt_D, BallPosX_D, BallPosY_D, Player0Right, Player0Left, Paddle0XPos_D, Paddle1XPos_D, BallXDir_D, BallYDir_D,
 								  Player0Score_D, Player1Score_D
 								)
 	begin
@@ -147,17 +149,31 @@ begin
 				BallYDir_N <= "01";	
 			end if;
 
-			if (Button0 = '0' and Button1 = '0') then
+			if (Player0Right = '0' and Player0Left = '0') then
 				null;
 				
-			elsif Button0 = '0' then
+			elsif Player0Right = '0' then
 				if (Paddle0XPos_D < XRes-PaddleWidth / 2) then
 					Paddle0XPos_N <= Paddle0XPos_D + 1;
 				end if;
 			
-			elsif Button1 = '0' then
+			elsif Player0Left = '0' then
 				if (Paddle0XPos_D > PaddleWidth / 2) then
 					Paddle0XPos_N <= Paddle0XPos_D - 1;
+				end if;
+			end if;
+			
+			if (Player1Right = '0' and Player1Left = '0') then
+				null;
+				
+			elsif Player1Right = '0' then
+				if (Paddle1XPos_D < XRes-PaddleWidth / 2) then
+					Paddle1XPos_N <= Paddle1XPos_D + 1;
+				end if;
+			
+			elsif Player1Left = '0' then
+				if (Paddle1XPos_D > PaddleWidth / 2) then
+					Paddle1XPos_N <= Paddle1XPos_D - 1;
 				end if;
 			end if;
 		end if;
