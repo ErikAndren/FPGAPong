@@ -88,7 +88,7 @@ begin
 	end process;
 
 	SampleAsync : process (SampleCnt_D, BallPosX_D, BallPosY_D, Player0Right, Player0Left, Paddle0XPos_D, Paddle1XPos_D, BallXDir_D, BallYDir_D,
-								  Player0Score_D, Player1Score_D, Player1Right, Player2Right
+								  Player0Score_D, Player1Score_D, Player1Right, Player1Right
 								)
 	begin
 		BallPosX_N <= BallPosX_D;
