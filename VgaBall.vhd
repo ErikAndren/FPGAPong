@@ -18,6 +18,8 @@ port (
 	Player1Right : in bit1;
 	Player1Left : in bit1;
 	--
+	Rand : in word(16-1 downto 0);
+	--
 	XCord  : in word(VgaHVideoW-1 downto 0);		
 	YCord  : in word(VgaVVideoW-1 downto 0);
 	--
@@ -34,6 +36,9 @@ architecture rtl of VgaBall is
 	
 	constant PaddleWidth   : positive := 40;
 	constant PaddleDepth   : positive := 4;
+	
+	constant X : natural := 0;
+	constant Y : natural := 1;
 	
 	constant XRes : positive := 640;
 	constant YRes : positive := 480;
@@ -56,6 +61,10 @@ architecture rtl of VgaBall is
 	constant ScoreBoard1XOffs : natural := 4;
 	constant ScoreBoard1YOffs : natural := YRes / 2 + 9;
 	
+	constant MaxSpeed : positive := 3;
+	type BallSpeed is array (2-1 downto 0) of word(MaxSpeed-1 downto 0);
+	signal BallSpeed_N, BallSpeed_D : BallSpeed;
+	
 begin	
 	Sampler : process (Clk, Rst_N)
 	begin
@@ -65,10 +74,11 @@ begin
 			BallPosY_D    <= conv_word(YRes / 2, BallPosY_D'length);
 			Paddle0XPos_D <= conv_word(XRes / 2, Paddle0XPos_D'length);
 			Paddle1XPos_D <= conv_word(XRes / 2, Paddle1XPos_D'length);
-			BallXDir_D    <= (others => '0');
-			BallYDir_D    <= "10";
+			BallXDir_D    <= "00";
+			BallYDir_D    <= "00";
 			Player0Score_D <= (others => '0');
 			Player1Score_D <= (others => '0');
+			BallSpeed_D    <= (others => (others => '0'));
 			
 		elsif rising_edge(Clk) then
 			SampleCnt_D <= SampleCnt_N;
@@ -84,23 +94,32 @@ begin
 			Player0Score_D <= Player0Score_N;
 			Player1Score_D <= Player1Score_N;
 			--
+			BallSpeed_D <= BallSpeed_N;
 		end if;
 	end process;
 
-	SampleAsync : process (SampleCnt_D, BallPosX_D, BallPosY_D, Player0Right, Player0Left, Paddle0XPos_D, Paddle1XPos_D, BallXDir_D, BallYDir_D,
-								  Player0Score_D, Player1Score_D, Player1Right, Player1Left
+	SampleAsync : process (SampleCnt_D,
+									BallPosX_D, BallPosY_D, 
+									Player0Right, Player0Left, 
+									Paddle0XPos_D, Paddle1XPos_D, 
+									BallXDir_D, BallYDir_D,
+									Player0Score_D, Player1Score_D, 
+									Player1Right, Player1Left,
+									BallSpeed_D, Rand
 								)
 	begin
-		BallPosX_N <= BallPosX_D;
-		BallPosY_N <= BallPosY_D;
-		SampleCnt_N <= SampleCnt_D + 1;
-		BallXDir_N <= BallXDir_D;
-		BallYDir_N <= BallYDir_D;
+		BallPosX_N     <= BallPosX_D;
+		BallPosY_N     <= BallPosY_D;
+		SampleCnt_N    <= SampleCnt_D + 1;
+		BallXDir_N     <= BallXDir_D;
+		BallYDir_N     <= BallYDir_D;
 		Player0Score_N <= Player0Score_D;
 		Player1Score_N <= Player1Score_D;
 		
-		Paddle0XPos_N <= Paddle0XPos_D;
-		Paddle1XPos_N <= Paddle1XPos_D;
+		Paddle0XPos_N  <= Paddle0XPos_D;
+		Paddle1XPos_N  <= Paddle1XPos_D;
+		
+		BallSpeed_N    <= BallSpeed_D;
 		
 		if (SampleCnt_D = 250000/2) then
 			SampleCnt_N <= (others => '0');
@@ -108,24 +127,46 @@ begin
 
 		-- Only sample once per second
 		if RedOr(SampleCnt_D) = '0' then
+			if (BallSpeed_D(Y) = 0) then
+				BallSpeed_N(Y) <= Rand(MaxSpeed-1 downto 0);
+			end if;
+
+			-- X direction is mandantory
+			if (RedXor(BallXDir_D) = '0') then
+				if (Rand(0)) = '0' then
+					BallXDir_N <= "01";
+				else
+					BallXDir_N <= "10";
+				end if;
+			end if;
+
+			-- Y direction is mandantory
+			if (RedXor(BallYDir_D) = '0') then
+				if (Rand(1)) = '0' then
+					BallYDir_N <= "01";
+				else
+					BallYDir_N <= "10";
+				end if;
+			end if;
+		
 			if (BallYDir_D = "10") then
-				BallPosY_N <= BallPosY_D - 1;
+				BallPosY_N <= BallPosY_D - BallSpeed_D(Y);
 			elsif (BallYDir_D = "01") then
-				BallPosY_N <= BallPosY_D + 1;
+				BallPosY_N <= BallPosY_D + BallSpeed_D(Y);
 			end if;
-			
+
 			if (BallXDir_D = "10") then
-				BallPosX_N <= BallPosX_D - 1;
+				BallPosX_N <= BallPosX_D - BallSpeed_D(X);
 			elsif (BallXDir_D = "01") then
-				BallPosX_N <= BallPosX_D + 1;
-			end if;
-			
+				BallPosX_N <= BallPosX_D + BallSpeed_D(X);
+			end if;	
+
 			if (BallPosY_D = Paddle0YPos and BallPosX_D > Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D < Paddle0XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "01";
 			elsif (BallPosY_D = Paddle1YPos and BallPosX_D > Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle1XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "10";
 			end if;
-			
+
 			-- Score for player 1
 			if (BallPosY_D = 0) then
 				if (Player1Score_D >= 9) then
@@ -198,6 +239,7 @@ begin
 			Red <= '1';	
 		end if;
 		
+		-- Draw middle line
 		if (YCord = (YRes / 2) and Modulo(XCord, 8) < 4) then
 			Green <= '1';
 			Blue  <= '1';

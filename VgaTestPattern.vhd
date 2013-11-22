@@ -33,6 +33,8 @@ architecture rtl of VgaTestPattern is
 	
 	signal XCord : word(VgaHVideoW-1 downto 0);
 	signal YCord : word(VgaVVideoW-1 downto 0);
+	
+	signal Rand : word(16-1 downto 0);
 begin
 
 	RstSync : entity work.ResetSync
@@ -53,11 +55,20 @@ begin
 	);
 
 	--
-
+	
+	Randomizer : entity work.LFSR
+	port map (
+		Clk		=> PixelClk,                 
+		RstN	   => Rst_N,                    
+		LFSR_Out => Rand
+	);
+	
 	Ball : entity work.VgaBall
 		port map (
 			Clk    => PixelClk,
 			Rst_N  => Rst_N,
+			--
+			Rand => Rand,
 			--
 			Player0Right => Button0,
 			Player0Left  => Button1,
