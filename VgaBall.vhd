@@ -219,6 +219,13 @@ begin
 				BallXDir_N <= "00";
 				BallYDir_N <= "00";	
 			end if;
+			
+			-- Bounce on walls
+			if (BallPosX_D = 0) then
+				BallXDir_N <= "01";
+			elsif (BallPosX_D = XRes-1) then
+				BallXDir_N <= "10";
+			end if;
 
 			if (Player0Right = '0' and Player0Left = '0') then
 				null;
