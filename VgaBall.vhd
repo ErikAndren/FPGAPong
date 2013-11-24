@@ -30,7 +30,14 @@ port (
 end entity;
 	
 architecture rtl of VgaBall is
-	signal SampleCnt_N, SampleCnt_D : word(bits(25000000)-1 downto 0);
+	-- Update 8 times every cycle
+	-- constant Frequency  : natural := 3125000;
+   constant Frequency  : natural := 150000;
+	constant UpdateCnt  : natural := 8;
+	--
+	signal UpdateCnt_N, UpdateCnt_D : word(bits(UpdateCnt)-1 downto 0);
+	signal SampleCnt_N, SampleCnt_D : word(bits(Frequency)-1 downto 0);
+	--
 	signal BallPosX_D, BallPosX_N : word(VgaHVideoW-1 downto 0);
 	signal BallPosY_D, BallPosY_N : word(VgaVVideoW-1 downto 0);
 	
@@ -54,16 +61,18 @@ architecture rtl of VgaBall is
 	
 	signal Player0Score_N, Player0Score_D : word(4-1 downto 0);
 	signal Player1Score_N, Player1Score_D : word(4-1 downto 0);
-	
+	--
 	constant ScoreBoard0XOffs : natural := 4;
 	constant ScoreBoard0YOffs : natural := YRes / 2 - 16;
-
+	--
 	constant ScoreBoard1XOffs : natural := 4;
 	constant ScoreBoard1YOffs : natural := YRes / 2 + 9;
-	
+	--
 	constant MaxSpeed : positive := 3;
 	type BallSpeed is array (2-1 downto 0) of word(MaxSpeed-1 downto 0);
 	signal BallSpeed_N, BallSpeed_D : BallSpeed;
+	--
+
 	
 begin	
 	Sampler : process (Clk, Rst_N)
@@ -79,6 +88,7 @@ begin
 			Player0Score_D <= (others => '0');
 			Player1Score_D <= (others => '0');
 			BallSpeed_D    <= (others => (others => '0'));
+			UpdateCnt_D    <= (others => '0');
 			
 		elsif rising_edge(Clk) then
 			SampleCnt_D <= SampleCnt_N;
@@ -95,6 +105,7 @@ begin
 			Player1Score_D <= Player1Score_N;
 			--
 			BallSpeed_D <= BallSpeed_N;
+			UpdateCnt_D <= UpdateCnt_N;
 		end if;
 	end process;
 
@@ -105,7 +116,8 @@ begin
 									BallXDir_D, BallYDir_D,
 									Player0Score_D, Player1Score_D, 
 									Player1Right, Player1Left,
-									BallSpeed_D, Rand
+									BallSpeed_D, Rand,
+									UpdateCnt_D
 								)
 	begin
 		BallPosX_N     <= BallPosX_D;
@@ -115,20 +127,26 @@ begin
 		BallYDir_N     <= BallYDir_D;
 		Player0Score_N <= Player0Score_D;
 		Player1Score_N <= Player1Score_D;
-		
+		--
 		Paddle0XPos_N  <= Paddle0XPos_D;
 		Paddle1XPos_N  <= Paddle1XPos_D;
-		
+		--
 		BallSpeed_N    <= BallSpeed_D;
-		
-		if (SampleCnt_D = 250000/2) then
-			SampleCnt_N <= (others => '0');
-		end if;
+		--
+		UpdateCnt_N    <= UpdateCnt_D;
 
-		-- Only sample once per second
-		if RedOr(SampleCnt_D) = '0' then
+		if SampleCnt_D = 150000 then
+			SampleCnt_N <= (others => '0');
+			UpdateCnt_N <= UpdateCnt_D + 1;
+		
+			-- Ball must never stand still in Y direction
 			if (BallSpeed_D(Y) = 0) then
 				BallSpeed_N(Y) <= Rand(MaxSpeed-1 downto 0);
+			end if;
+			
+			-- Ball must never stand still in Y direction
+			if (BallSpeed_D(X) = 0) then
+				BallSpeed_N(X) <= Rand(MaxSpeed-1 downto 0);
 			end if;
 
 			-- X direction is mandantory
@@ -149,16 +167,20 @@ begin
 				end if;
 			end if;
 		
-			if (BallYDir_D = "10") then
-				BallPosY_N <= BallPosY_D - BallSpeed_D(Y);
-			elsif (BallYDir_D = "01") then
-				BallPosY_N <= BallPosY_D + BallSpeed_D(Y);
+			if (RedOr(SHL(UpdateCnt_D, BallSpeed_D(Y))) = '0') then
+				if (BallYDir_D = "10") then 
+					BallPosY_N <= BallPosY_D - BallSpeed_D(Y);
+				elsif (BallYDir_D = "01") then
+					BallPosY_N <= BallPosY_D + BallSpeed_D(Y);
+				end if;
 			end if;
 
-			if (BallXDir_D = "10") then
-				BallPosX_N <= BallPosX_D - BallSpeed_D(X);
-			elsif (BallXDir_D = "01") then
-				BallPosX_N <= BallPosX_D + BallSpeed_D(X);
+			if (RedOr(SHL(UpdateCnt_D, BallSpeed_D(X))) = '0') then
+				if (BallXDir_D = "10") then
+					BallPosX_N <= BallPosX_D - BallSpeed_D(X);
+				elsif (BallXDir_D = "01") then
+					BallPosX_N <= BallPosX_D + BallSpeed_D(X);
+				end if;
 			end if;	
 
 			if (BallPosY_D = Paddle0YPos and BallPosX_D > Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D < Paddle0XPos_D + PaddleWidth / 2) then
@@ -179,7 +201,7 @@ begin
 				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
 				BallPosY_N <= conv_word(YRes-20 / 2, BallPosY_N'length);
 				BallXDir_N <= "00";
-				BallYDir_N <= "10";	
+				BallYDir_N <= "00";	
 			end if;
 			
 			-- Score for player 0
@@ -195,7 +217,7 @@ begin
 				BallPosY_N <= conv_word(20, BallPosY_N'length);
 				--
 				BallXDir_N <= "00";
-				BallYDir_N <= "01";	
+				BallYDir_N <= "00";	
 			end if;
 
 			if (Player0Right = '0' and Player0Left = '0') then
