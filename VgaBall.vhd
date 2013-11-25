@@ -201,7 +201,7 @@ begin
 				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
 				BallPosY_N <= conv_word(YRes-20 / 2, BallPosY_N'length);
 				BallXDir_N <= "00";
-				BallYDir_N <= "00";	
+				BallYDir_N <= "10";	
 			end if;
 			
 			-- Score for player 0
@@ -217,7 +217,7 @@ begin
 				BallPosY_N <= conv_word(20, BallPosY_N'length);
 				--
 				BallXDir_N <= "00";
-				BallYDir_N <= "00";	
+				BallYDir_N <= "01";	
 			end if;
 			
 			-- Bounce on walls
