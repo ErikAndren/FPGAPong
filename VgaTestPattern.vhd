@@ -15,6 +15,11 @@ port (
 	Button1      : in bit1;
 	Button2      : in bit1;
 	Button3      : in bit1;
+	--
+	Led0         : out bit1;
+	Led1         : out bit1;
+	Led2         : out bit1;
+	Led3         : out bit1;
 	--		
 	HSyncN : out bit1;
 	VSyncN : out bit1;
@@ -36,6 +41,10 @@ architecture rtl of VgaTestPattern is
 	
 	signal Rand : word(16-1 downto 0);
 begin
+	Led0 <= Button0;
+	Led1 <= Button1;
+	Led2 <= Button2;
+	Led3 <= Button3;
 
 	RstSync : entity work.ResetSync
 	port map (
