@@ -195,8 +195,8 @@ begin
 					Bounces_N <= Bounces_D + 1;
 				end if;
 			elsif (BallYDir_D = "01" and 
-			       BallPosY_D >= Paddle1YPos - PaddleDepth / 2 and BallPosY_D <= Paddle1YPos + PaddleDepth and 
-					 BallPosX_D >= Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D <= Paddle1XPos_D + PaddleWidth / 2) then
+			       BallPosY_D >= Paddle1YPos - PaddleDepth / 2 and BallPosY_D <= Paddle1YPos + PaddleDepth / 2 and 
+					 BallPosX_D >= Paddle1XPos_D - PaddleWidth / 2 and BallPosX_D <= Paddle1XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "10";
 
 				if (RedAnd(Bounces_D) = '0') then
