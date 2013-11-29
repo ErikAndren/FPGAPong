@@ -42,10 +42,12 @@ architecture rtl of VgaBall is
 	
 	--constant PaddleWidth   : positive := 40;
 	constant PaddleWidth : positive := 630;
-	constant PaddleDepth   : positive := 4;
+	constant PaddleDepth : positive := 4;
 	
 	constant X : natural := 0;
 	constant Y : natural := 1;
+	
+	constant BallSz : positive := 6;
 	
 	constant XRes : positive := 640;
 	constant YRes : positive := 480;
@@ -185,12 +187,16 @@ begin
 			end if;	
 
 			-- Bounce on paddle
-			if (BallYDir_D = "10" and BallPosY_D = Paddle0YPos and BallPosX_D > Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D < Paddle0XPos_D + PaddleWidth / 2) then
+			if (BallYDir_D = "10" and 
+			    BallPosY_D >= Paddle0YPos - PaddleDepth / 2 and BallPosY_D <= Paddle0YPos + PaddleDepth / 2 and 
+				 BallPosX_D >= Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D <= Paddle0XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "01";
 				if (RedAnd(Bounces_D) = '0') then
 					Bounces_N <= Bounces_D + 1;
 				end if;
-			elsif (BallYDir_D = "01" and BallPosY_D = Paddle1YPos and BallPosX_D > Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle1XPos_D + PaddleWidth / 2) then
+			elsif (BallYDir_D = "01" and 
+			       BallPosY_D >= Paddle1YPos - PaddleDepth / 2 and BallPosY_D <= Paddle1YPos + PaddleDepth and 
+					 BallPosX_D >= Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D <= Paddle1XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "10";
 
 				if (RedAnd(Bounces_D) = '0') then
@@ -268,14 +274,14 @@ begin
 		end if;
 	end process;	
 
-	DrawBall : process (XCord, YCord, BallPosX_D, BallPosY_D, Paddle0XPos_D, Paddle1XPos_D, Player0Score_D, Player1Score_D)
+	Draw : process (XCord, YCord, BallPosX_D, BallPosY_D, Paddle0XPos_D, Paddle1XPos_D, Player0Score_D, Player1Score_D)
 	begin
 		Red   <= '0';
 		Green <= '0';
 		Blue  <= '0';
 		
-		if (XCord = BallPosX_D or XCord = BallPosX_D-1 or XCord = BallPosX_D+1) and
-			(YCord = BallPosY_D or YCord = BallPosY_D-1 or YCord = BallPosY_D+1) then
+		if XCord >= BallPosX_D - BallSz / 2 and XCord <= BallPosX_D + BallSz / 2 and
+			YCord >= BallPosY_D - BallSz / 2 and YCord <= BallPosY_D + BallSz / 2 then
 			Red <= '1';	
 		end if;
 		
