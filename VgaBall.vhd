@@ -172,17 +172,17 @@ begin
 		
 			if RedOr(SHL(UpdateCnt_D, BallSpeed_D(Y))) = '0' then
 				if (BallYDir_D = "10") then 
-					BallPosY_N <= BallPosY_D - BallSpeed_D(Y);
+					BallPosY_N <= BallPosY_D - 1;
 				elsif (BallYDir_D = "01") then
-					BallPosY_N <= BallPosY_D + BallSpeed_D(Y);
+					BallPosY_N <= BallPosY_D + 1;
 				end if;
 			end if;
 
 			if (RedOr(SHL(UpdateCnt_D, BallSpeed_D(X))) = '0') then
 				if (BallXDir_D = "10") then
-					BallPosX_N <= BallPosX_D - BallSpeed_D(X);
+					BallPosX_N <= BallPosX_D - 1;
 				elsif (BallXDir_D = "01") then
-					BallPosX_N <= BallPosX_D + BallSpeed_D(X);
+					BallPosX_N <= BallPosX_D + 1;
 				end if;
 			end if;	
 
