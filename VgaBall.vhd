@@ -40,7 +40,8 @@ architecture rtl of VgaBall is
 	signal BallPosX_D, BallPosX_N : word(VgaHVideoW-1 downto 0);
 	signal BallPosY_D, BallPosY_N : word(VgaVVideoW-1 downto 0);
 	
-	constant PaddleWidth   : positive := 40;
+	--constant PaddleWidth   : positive := 40;
+	constant PaddleWidth : positive := 630;
 	constant PaddleDepth   : positive := 4;
 	
 	constant X : natural := 0;
@@ -138,8 +139,8 @@ begin
 		UpdateCnt_N    <= UpdateCnt_D;
 		Bounces_N      <= Bounces_D;
 		--
-		BallSpeed_N(X) <= conv_word(conv_integer(SHR(Bounces_D, "11")) + 1, BallSpeed_N(X)'length);
-		BallSpeed_N(Y) <= conv_word(conv_integer(SHR(Bounces_D, "11")) + 1, BallSpeed_N(Y)'length);
+		BallSpeed_N(X) <= conv_word(conv_integer(Bounces_D(Bounces_D'high downto 2)) + 1, BallSpeed_N(X)'length);
+		BallSpeed_N(Y) <= conv_word(conv_integer(Bounces_D(Bounces_D'high downto 2)) + 1, BallSpeed_N(Y)'length);
 
 		if SampleCnt_D = Frequency then
 			SampleCnt_N    <= (others => '0');
@@ -184,14 +185,14 @@ begin
 			end if;	
 
 			-- Bounce on paddle
-			if (BallPosY_D = Paddle0YPos and BallPosX_D > Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D < Paddle0XPos_D + PaddleWidth / 2) then
+			if (BallYDir_D = "10" and BallPosY_D = Paddle0YPos and BallPosX_D > Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D < Paddle0XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "01";
 				if (RedAnd(Bounces_D) = '0') then
 					Bounces_N <= Bounces_D + 1;
 				end if;
-			elsif (BallPosY_D = Paddle1YPos and BallPosX_D > Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle1XPos_D + PaddleWidth / 2) then
+			elsif (BallYDir_D = "01" and BallPosY_D = Paddle1YPos and BallPosX_D > Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle1XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "10";
-				
+
 				if (RedAnd(Bounces_D) = '0') then
 					Bounces_N <= Bounces_D + 1;
 				end if;
