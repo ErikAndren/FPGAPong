@@ -281,7 +281,12 @@ begin
 		Blue  <= '0';
 		
 		if XCord >= BallPosX_D - BallSz / 2 and XCord <= BallPosX_D + BallSz / 2 and
-			YCord >= BallPosY_D - BallSz / 2 and YCord <= BallPosY_D + BallSz / 2 then
+			YCord >= BallPosY_D - BallSz / 2 and YCord <= BallPosY_D + BallSz / 2 and
+			not (XCord = BallPosX_D - BallSz / 2 and YCord = BallPosY_D - BallSz / 2) and
+			not (XCord = BallPosX_D + BallSz / 2 and YCord = BallPosY_D + BallSz / 2) and
+			not (XCord = BallPosX_D - BallSz / 2 and YCord = BallPosY_D + BallSz / 2) and
+			not (XCord = BallPosX_D + BallSz / 2 and YCord = BallPosY_D - BallSz / 2)
+			then
 			Red <= '1';	
 		end if;
 		
