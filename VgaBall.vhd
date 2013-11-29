@@ -31,11 +31,10 @@ end entity;
 	
 architecture rtl of VgaBall is
 	-- Update 8 times every cycle
-	-- constant Frequency  : natural := 3125000;
-   constant Frequency  : natural := 150000;
+	constant Frequency  : natural := 31250;
 	constant UpdateCnt  : natural := 8;
 	--
-	signal UpdateCnt_N, UpdateCnt_D : word(bits(UpdateCnt)-1 downto 0);
+	signal UpdateCnt_N, UpdateCnt_D : word(UpdateCnt-1 downto 0);
 	signal SampleCnt_N, SampleCnt_D : word(bits(Frequency)-1 downto 0);
 	--
 	signal BallPosX_D, BallPosX_N : word(VgaHVideoW-1 downto 0);
@@ -72,7 +71,7 @@ architecture rtl of VgaBall is
 	type BallSpeed is array (2-1 downto 0) of word(MaxSpeed-1 downto 0);
 	signal BallSpeed_N, BallSpeed_D : BallSpeed;
 	--
-
+	signal Bounces_N, Bounces_D : word(8-1 downto 0);
 	
 begin	
 	Sampler : process (Clk, Rst_N)
@@ -89,6 +88,7 @@ begin
 			Player1Score_D <= (others => '0');
 			BallSpeed_D    <= (others => (others => '0'));
 			UpdateCnt_D    <= (others => '0');
+			Bounces_D      <= (others => '0');
 			
 		elsif rising_edge(Clk) then
 			SampleCnt_D <= SampleCnt_N;
@@ -106,6 +106,8 @@ begin
 			--
 			BallSpeed_D <= BallSpeed_N;
 			UpdateCnt_D <= UpdateCnt_N;
+			--
+			Bounces_D   <= Bounces_N;
 		end if;
 	end process;
 
@@ -117,7 +119,7 @@ begin
 									Player0Score_D, Player1Score_D, 
 									Player1Right, Player1Left,
 									BallSpeed_D, Rand,
-									UpdateCnt_D
+									UpdateCnt_D, Bounces_D
 								)
 	begin
 		BallPosX_N     <= BallPosX_D;
@@ -134,21 +136,19 @@ begin
 		BallSpeed_N    <= BallSpeed_D;
 		--
 		UpdateCnt_N    <= UpdateCnt_D;
+		Bounces_N      <= Bounces_D;
+		--
+		BallSpeed_N(X) <= conv_word(conv_integer(SHR(Bounces_D, "11")) + 1, BallSpeed_N(X)'length);
+		BallSpeed_N(Y) <= conv_word(conv_integer(SHR(Bounces_D, "11")) + 1, BallSpeed_N(Y)'length);
 
-		if SampleCnt_D = 150000 then
-			SampleCnt_N <= (others => '0');
-			UpdateCnt_N <= UpdateCnt_D + 1;
+		if SampleCnt_D = Frequency then
+			SampleCnt_N    <= (others => '0');
+			UpdateCnt_N    <= SHL(UpdateCnt_D, "1");
+			UpdateCnt_N(0) <= '1';
+			if (RedAnd(UpdateCnt_D) = '1') then
+				UpdateCnt_N <= (others => '0');
+			end if;
 		
-			-- Ball must never stand still in Y direction
-			if (BallSpeed_D(Y) = 0) then
-				BallSpeed_N(Y) <= Rand(MaxSpeed-1 downto 0);
-			end if;
-			
-			-- Ball must never stand still in Y direction
-			if (BallSpeed_D(X) = 0) then
-				BallSpeed_N(X) <= Rand(MaxSpeed-1 downto 0);
-			end if;
-
 			-- X direction is mandantory
 			if (RedXor(BallXDir_D) = '0') then
 				if (Rand(0)) = '0' then
@@ -167,7 +167,7 @@ begin
 				end if;
 			end if;
 		
-			if (RedOr(SHL(UpdateCnt_D, BallSpeed_D(Y))) = '0') then
+			if RedOr(SHL(UpdateCnt_D, BallSpeed_D(Y))) = '0' then
 				if (BallYDir_D = "10") then 
 					BallPosY_N <= BallPosY_D - BallSpeed_D(Y);
 				elsif (BallYDir_D = "01") then
@@ -183,10 +183,18 @@ begin
 				end if;
 			end if;	
 
+			-- Bounce on paddle
 			if (BallPosY_D = Paddle0YPos and BallPosX_D > Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D < Paddle0XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "01";
+				if (RedAnd(Bounces_D) = '0') then
+					Bounces_N <= Bounces_D + 1;
+				end if;
 			elsif (BallPosY_D = Paddle1YPos and BallPosX_D > Paddle1XPos_D - PaddleDepth / 2 and BallPosX_D < Paddle1XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "10";
+				
+				if (RedAnd(Bounces_D) = '0') then
+					Bounces_N <= Bounces_D + 1;
+				end if;
 			end if;
 
 			-- Score for player 1
@@ -201,7 +209,8 @@ begin
 				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
 				BallPosY_N <= conv_word(YRes-20 / 2, BallPosY_N'length);
 				BallXDir_N <= "00";
-				BallYDir_N <= "10";	
+				BallYDir_N <= "10";
+				Bounces_N  <= (others => '0');
 			end if;
 			
 			-- Score for player 0
@@ -217,7 +226,8 @@ begin
 				BallPosY_N <= conv_word(20, BallPosY_N'length);
 				--
 				BallXDir_N <= "00";
-				BallYDir_N <= "01";	
+				BallYDir_N <= "01";
+				Bounces_N  <= (others => '0');
 			end if;
 			
 			-- Bounce on walls
