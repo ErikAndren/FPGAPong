@@ -3,6 +3,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.std_logic_arith.all;
+use ieee.numeric_std.all;
 
 use work.Types.all;
 use work.VgaPack.all;
@@ -33,6 +34,17 @@ architecture rtl of VgaBall is
 	-- Update 8 times every cycle
 	constant Frequency  : natural := 31250;
 	constant UpdateCnt  : natural := 8;
+	
+	type UpdateVector is array (0 to UpdateCnt-1) of word(UpdateCnt-1 downto 0);
+	constant UpVec : UpdateVector := ("00000001",
+												 "00010001",
+												 "00010101",
+												 "01010101",
+												 "01010111",
+												 "01110111",
+												 "01111111",
+												 "11111111");
+
 	--
 	signal UpdateCnt_N, UpdateCnt_D : word(UpdateCnt-1 downto 0);
 	signal SampleCnt_N, SampleCnt_D : word(bits(Frequency)-1 downto 0);
@@ -75,7 +87,7 @@ architecture rtl of VgaBall is
 	signal BallSpeed_N, BallSpeed_D : BallSpeed;
 	--
 	signal Bounces_N, Bounces_D : word(8-1 downto 0);
-	
+
 begin	
 	Sampler : process (Clk, Rst_N)
 	begin
@@ -141,17 +153,16 @@ begin
 		UpdateCnt_N    <= UpdateCnt_D;
 		Bounces_N      <= Bounces_D;
 		--
-		BallSpeed_N(X) <= conv_word(conv_integer(Bounces_D(Bounces_D'high downto 2)) + 1, BallSpeed_N(X)'length);
-		BallSpeed_N(Y) <= conv_word(conv_integer(Bounces_D(Bounces_D'high downto 2)) + 1, BallSpeed_N(Y)'length);
+		BallSpeed_N(X) <= conv_word(conv_integer(Bounces_D) + 1, Ballspeed_N(X)'length);
+		BallSpeed_N(Y) <= conv_word(conv_integer(Bounces_D) + 1, Ballspeed_N(Y)'length);
 
 		if SampleCnt_D = Frequency then
 			SampleCnt_N    <= (others => '0');
-			UpdateCnt_N    <= SHL(UpdateCnt_D, "1");
-			UpdateCnt_N(0) <= '1';
-			if (RedAnd(UpdateCnt_D) = '1') then
-				UpdateCnt_N <= (others => '0');
+			UpdateCnt_N    <= UpdateCnt_D(UpdateCnt_D'high-1 downto 0) & '0';
+			if (RedOr(UpdateCnt_D) = '0') then
+				UpdateCnt_N <= xt0(UpdateCnt_N'length-1) & '1';
 			end if;
-		
+
 			-- X direction is mandantory
 			if (RedXor(BallXDir_D) = '0') then
 				if (Rand(0)) = '0' then
@@ -169,8 +180,13 @@ begin
 					BallYDir_N <= "10";
 				end if;
 			end if;
+			
+			-- Y speed is mandantory
+			if (RedOr(BallSpeed_D(Y)) = '0') then
+				BallSpeed_N(Y) <= conv_word(1, BallSpeed_N(Y)'length);
+			end if;
 		
-			if RedOr(SHL(UpdateCnt_D, BallSpeed_D(Y))) = '0' then
+			if RedOr((UpVec(conv_integer(BallSpeed_D(Y))) and UpdateCnt_D)) = '1' then
 				if (BallYDir_D = "10") then 
 					BallPosY_N <= BallPosY_D - 1;
 				elsif (BallYDir_D = "01") then
@@ -178,7 +194,7 @@ begin
 				end if;
 			end if;
 
-			if (RedOr(SHL(UpdateCnt_D, BallSpeed_D(X))) = '0') then
+			if RedOr((UpVec(conv_integer(BallSpeed_D(X))) and UpdateCnt_D)) = '1' then
 				if (BallXDir_D = "10") then
 					BallPosX_N <= BallPosX_D - 1;
 				elsif (BallXDir_D = "01") then
