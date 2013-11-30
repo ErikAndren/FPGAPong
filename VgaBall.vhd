@@ -153,8 +153,8 @@ begin
 		UpdateCnt_N    <= UpdateCnt_D;
 		Bounces_N      <= Bounces_D;
 		--
-		BallSpeed_N(X) <= conv_word(conv_integer(Bounces_D(Bounces_D'high downto 2)) + 1, BallSpeed_N(X)'length);
-		BallSpeed_N(Y) <= conv_word(conv_integer(Bounces_D(Bounces_D'high downto 2)) + 1, BallSpeed_N(Y)'length);
+		BallSpeed_N(X) <= BallSpeed_D(X);
+		BallSpeed_N(Y) <= BallSpeed_D(Y);
 
 		if SampleCnt_D = Frequency then
 			SampleCnt_N    <= (others => '0');
@@ -180,11 +180,6 @@ begin
 					BallYDir_N <= "10";
 				end if;
 			end if;
-			
-			-- Y speed is mandantory
-			if (RedOr(BallSpeed_D(Y)) = '0') then
-				BallSpeed_N(Y) <= conv_word(1, BallSpeed_N(Y)'length);
-			end if;
 		
 			if RedOr((UpVec(conv_integer(BallSpeed_D(Y))) and UpdateCnt_D)) = '1' then
 				if (BallYDir_D = "10") then 
@@ -207,17 +202,33 @@ begin
 			    BallPosY_D >= Paddle0YPos - PaddleDepth / 2 and BallPosY_D <= Paddle0YPos + PaddleDepth / 2 and 
 				 BallPosX_D >= Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D <= Paddle0XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "01";
-				if (RedAnd(Bounces_D) = '0') then
+				
+				if (Bounces_D < xt1(Bounces_D'length)) then
 					Bounces_N <= Bounces_D + 1;
 				end if;
+
+				if (Bounces_D > Rand(4-1 downto 0) and RedAnd(BallSpeed_D(X)) = '0') then
+					BallSpeed_N(X) <= BallSpeed_D(X) + 1;
+					BallSpeed_N(Y) <= BallSpeed_D(Y) + 1;
+					Bounces_N <= (others => '0');
+				end if;
+
 			elsif (BallYDir_D = "01" and 
 			       BallPosY_D >= Paddle1YPos - PaddleDepth / 2 and BallPosY_D <= Paddle1YPos + PaddleDepth / 2 and 
 					 BallPosX_D >= Paddle1XPos_D - PaddleWidth / 2 and BallPosX_D <= Paddle1XPos_D + PaddleWidth / 2) then
 				BallYDir_N <= "10";
 
-				if (RedAnd(Bounces_D) = '0') then
+				if (Bounces_D < xt1(Bounces_D'length)) then
 					Bounces_N <= Bounces_D + 1;
 				end if;
+				
+				if (Bounces_D > Rand(4-1 downto 0) and RedAnd(BallSpeed_D(X)) = '0') then
+					BallSpeed_N(X) <= BallSpeed_D(X) + 1;
+					BallSpeed_N(Y) <= BallSpeed_D(Y) + 1;
+					Bounces_N <= (others => '0');
+				end if;
+
+				
 			end if;
 
 			-- Score for player 1
