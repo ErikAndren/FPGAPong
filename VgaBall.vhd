@@ -209,6 +209,10 @@ begin
 
 				if (Bounces_D > Rand(4-1 downto 0) and RedAnd(BallSpeed_D(X)) = '0') then
 					BallSpeed_N(X) <= BallSpeed_D(X) + 1;
+					Bounces_N <= (others => '0');
+				end if;
+				
+				if (Bounces_D > Rand(8-1 downto 4) and RedAnd(BallSpeed_D(X)) = '0') then
 					BallSpeed_N(Y) <= BallSpeed_D(Y) + 1;
 					Bounces_N <= (others => '0');
 				end if;
@@ -224,11 +228,13 @@ begin
 				
 				if (Bounces_D > Rand(4-1 downto 0) and RedAnd(BallSpeed_D(X)) = '0') then
 					BallSpeed_N(X) <= BallSpeed_D(X) + 1;
+					Bounces_N <= (others => '0');
+				end if;
+				
+				if (Bounces_D > Rand(8-1 downto 4) and RedAnd(BallSpeed_D(X)) = '0') then
 					BallSpeed_N(Y) <= BallSpeed_D(Y) + 1;
 					Bounces_N <= (others => '0');
 				end if;
-
-				
 			end if;
 
 			-- Score for player 1
