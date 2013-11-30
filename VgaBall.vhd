@@ -153,8 +153,8 @@ begin
 		UpdateCnt_N    <= UpdateCnt_D;
 		Bounces_N      <= Bounces_D;
 		--
-		BallSpeed_N(X) <= conv_word(conv_integer(Bounces_D) + 1, Ballspeed_N(X)'length);
-		BallSpeed_N(Y) <= conv_word(conv_integer(Bounces_D) + 1, Ballspeed_N(Y)'length);
+		BallSpeed_N(X) <= conv_word(conv_integer(Bounces_D(Bounces_D'high downto 2)) + 1, BallSpeed_N(X)'length);
+		BallSpeed_N(Y) <= conv_word(conv_integer(Bounces_D(Bounces_D'high downto 2)) + 1, BallSpeed_N(Y)'length);
 
 		if SampleCnt_D = Frequency then
 			SampleCnt_N    <= (others => '0');
