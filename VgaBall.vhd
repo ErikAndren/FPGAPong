@@ -59,6 +59,8 @@ architecture rtl of VgaBall is
 	constant X : natural := 0;
 	constant Y : natural := 1;
 	--
+	
+	--
 	constant BallSz : positive := 6;
 	--
 	constant XRes : positive := 640;
@@ -69,9 +71,14 @@ architecture rtl of VgaBall is
 	--
 	signal Paddle0XPos_N, Paddle0XPos_D : word(bits(XRes)-1 downto 0);
 	signal Paddle1XPos_N, Paddle1XPos_D : word(bits(XRes)-1 downto 0);
-	
-	signal BallXDir_N, BallXDir_D : word(2-1 downto 0);
-	signal BallYDir_N, BallYDir_D : word(2-1 downto 0);
+	--
+	type BallDir is array (2-1 downto 0) of word(2-1 downto 0);
+	constant GOING_LEFT  : word(2-1 downto 0) := "10";
+	constant GOING_RIGHT : word(2-1 downto 0) := "01";
+	constant GOING_UP    : word(2-1 downto 0) := "10";
+	constant GOING_DOWN  : word(2-1 downto 0) := "01";
+	--
+	signal BallDir_N, BallDir_D : BallDir;
 	
 	signal Player0Score_N, Player0Score_D : word(4-1 downto 0);
 	signal Player1Score_N, Player1Score_D : word(4-1 downto 0);
@@ -92,13 +99,12 @@ begin
 	Sampler : process (Clk, Rst_N)
 	begin
 		if Rst_N = '0' then
-			SampleCnt_D   <= (others => '0');
-			BallPosX_D    <= conv_word(XRes / 2, BallPosX_D'length);
-			BallPosY_D    <= conv_word(YRes / 2, BallPosY_D'length);
-			Paddle0XPos_D <= conv_word(XRes / 2, Paddle0XPos_D'length);
-			Paddle1XPos_D <= conv_word(XRes / 2, Paddle1XPos_D'length);
-			BallXDir_D    <= "00";
-			BallYDir_D    <= "00";
+			SampleCnt_D    <= (others => '0');
+			BallPosX_D     <= conv_word(XRes / 2, BallPosX_D'length);
+			BallPosY_D     <= conv_word(YRes / 2, BallPosY_D'length);
+			Paddle0XPos_D  <= conv_word(XRes / 2, Paddle0XPos_D'length);
+			Paddle1XPos_D  <= conv_word(XRes / 2, Paddle1XPos_D'length);
+			BallDir_D      <= (others => (others => '0'));
 			Player0Score_D <= (others => '0');
 			Player1Score_D <= (others => '0');
 			BallSpeed_D    <= (others => (others => '0'));
@@ -110,8 +116,7 @@ begin
 			BallPosX_D  <= BallPosX_N;
 			BallPosY_D  <= BallPosY_N;
 			--
-			BallXDir_D <= BallXDir_N;
-			BallYDir_D <= BallYDir_N;
+			BallDir_D <= BallDir_N;
 			--
 			Paddle0XPos_D <= Paddle0XPos_N;
 			Paddle1XPos_D <= Paddle1XPos_N;
@@ -130,7 +135,7 @@ begin
 									BallPosX_D, BallPosY_D, 
 									Player0Right, Player0Left, 
 									Paddle0XPos_D, Paddle1XPos_D, 
-									BallXDir_D, BallYDir_D,
+									BallDir_D,
 									Player0Score_D, Player1Score_D, 
 									Player1Right, Player1Left,
 									BallSpeed_D, Rand,
@@ -140,8 +145,7 @@ begin
 		BallPosX_N     <= BallPosX_D;
 		BallPosY_N     <= BallPosY_D;
 		SampleCnt_N    <= SampleCnt_D + 1;
-		BallXDir_N     <= BallXDir_D;
-		BallYDir_N     <= BallYDir_D;
+		BallDir_N      <= BallDir_D;
 		Player0Score_N <= Player0Score_D;
 		Player1Score_N <= Player1Score_D;
 		--
@@ -164,44 +168,44 @@ begin
 			end if;
 
 			-- X direction is mandantory
-			if (RedXor(BallXDir_D) = '0') then
+			if (RedXor(BallDir_D(X)) = '0') then
 				if (Rand(0)) = '0' then
-					BallXDir_N <= "01";
+					BallDir_N(X) <= GOING_RIGHT;
 				else
-					BallXDir_N <= "10";
+					BallDir_N(X) <= GOING_LEFT;
 				end if;
 			end if;
 
 			-- Y direction is mandantory
-			if (RedXor(BallYDir_D) = '0') then
+			if (RedXor(BallDir_D(Y)) = '0') then
 				if (Rand(1)) = '0' then
-					BallYDir_N <= "01";
+					BallDir_N(Y) <= GOING_DOWN;
 				else
-					BallYDir_N <= "10";
+					BallDir_N(Y) <= GOING_UP;
 				end if;
 			end if;
 		
 			if RedOr((UpVec(conv_integer(BallSpeed_D(Y))) and UpdateCnt_D)) = '1' then
-				if (BallYDir_D = "10") then 
+				if (BallDir_D(Y) = GOING_UP) then 
 					BallPosY_N <= BallPosY_D - 1;
-				elsif (BallYDir_D = "01") then
+				elsif (BallDir_D(Y) = GOING_DOWN) then
 					BallPosY_N <= BallPosY_D + 1;
 				end if;
 			end if;
 
 			if RedOr((UpVec(conv_integer(BallSpeed_D(X))) and UpdateCnt_D)) = '1' then
-				if (BallXDir_D = "10") then
+				if (BallDir_D(X) = GOING_LEFT) then
 					BallPosX_N <= BallPosX_D - 1;
-				elsif (BallXDir_D = "01") then
+				elsif (BallDir_D(X) = GOING_RIGHT) then
 					BallPosX_N <= BallPosX_D + 1;
 				end if;
 			end if;	
 
 			-- Bounce on paddle
-			if (BallYDir_D = "10" and 
+			if (BallDir_D(Y) = GOING_UP and 
 			    BallPosY_D >= Paddle0YPos - PaddleDepth / 2 and BallPosY_D <= Paddle0YPos + PaddleDepth / 2 and 
 				 BallPosX_D >= Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D <= Paddle0XPos_D + PaddleWidth / 2) then
-				BallYDir_N <= "01";
+				BallDir_N(Y) <= GOING_DOWN;
 				
 				if (Bounces_D < xt1(Bounces_D'length)) then
 					Bounces_N <= Bounces_D + 1;
@@ -217,10 +221,10 @@ begin
 					Bounces_N <= (others => '0');
 				end if;
 
-			elsif (BallYDir_D = "01" and 
+			elsif (BallDir_D(Y) = GOING_DOWN and 
 			       BallPosY_D >= Paddle1YPos - PaddleDepth / 2 and BallPosY_D <= Paddle1YPos + PaddleDepth / 2 and 
 					 BallPosX_D >= Paddle1XPos_D - PaddleWidth / 2 and BallPosX_D <= Paddle1XPos_D + PaddleWidth / 2) then
-				BallYDir_N <= "10";
+				BallDir_N(Y) <= GOING_UP;
 
 				if (Bounces_D < xt1(Bounces_D'length)) then
 					Bounces_N <= Bounces_D + 1;
@@ -248,8 +252,8 @@ begin
 				-- Reset state, give ball to losing player
 				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
 				BallPosY_N <= conv_word(YRes-20 / 2, BallPosY_N'length);
-				BallXDir_N <= "00";
-				BallYDir_N <= "10";
+				BallDir_N(X) <= "00";
+				BallDir_N(Y) <= GOING_UP;
 				Bounces_N  <= (others => '0');
 			end if;
 			
@@ -265,16 +269,16 @@ begin
 				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
 				BallPosY_N <= conv_word(20, BallPosY_N'length);
 				--
-				BallXDir_N <= "00";
-				BallYDir_N <= "01";
+				BallDir_N(X) <= "00";
+				BallDir_N(Y) <= GOING_DOWN;
 				Bounces_N  <= (others => '0');
 			end if;
 			
 			-- Bounce on walls
 			if (BallPosX_D = 0) then
-				BallXDir_N <= "01";
+				BallDir_N(X) <= GOING_RIGHT;
 			elsif (BallPosX_D = XRes-1) then
-				BallXDir_N <= "10";
+				BallDir_N(X) <= GOING_LEFT;
 			end if;
 
 			-- Add throttle factor
