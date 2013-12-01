@@ -17,7 +17,7 @@ port (
 	Player0Right : in bit1;
 	Player0Left  : in bit1;
 	Player1Right : in bit1;
-	Player1Left : in bit1;
+	Player1Left  : in bit1;
 	--
 	Rand : in word(16-1 downto 0);
 	--
@@ -51,22 +51,22 @@ architecture rtl of VgaBall is
 	--
 	signal BallPosX_D, BallPosX_N : word(VgaHVideoW-1 downto 0);
 	signal BallPosY_D, BallPosY_N : word(VgaVVideoW-1 downto 0);
-	
-	--constant PaddleWidth   : positive := 40;
-	constant PaddleWidth : positive := 630;
+	--
+	constant PaddleWidth   : positive := 40;
+	--constant PaddleWidth : positive := 640;
 	constant PaddleDepth : positive := 4;
-	
+	--
 	constant X : natural := 0;
 	constant Y : natural := 1;
-	
+	--
 	constant BallSz : positive := 6;
-	
+	--
 	constant XRes : positive := 640;
 	constant YRes : positive := 480;
-	
+	--
 	constant Paddle0YPos : positive := 10;
 	constant Paddle1YPos : positive := YRes - 10;
-	
+	--
 	signal Paddle0XPos_N, Paddle0XPos_D : word(bits(XRes)-1 downto 0);
 	signal Paddle1XPos_N, Paddle1XPos_D : word(bits(XRes)-1 downto 0);
 	
@@ -277,31 +277,34 @@ begin
 				BallXDir_N <= "10";
 			end if;
 
-			if (Player0Right = '0' and Player0Left = '0') then
-				null;
+			-- Add throttle factor
+			if (RedOr(UpdateCnt_D(8-1 downto 2)) = '0') then
+				if (Player0Right = '0' and Player0Left = '0') then
+					null;
 				
-			elsif Player0Right = '0' then
-				if (Paddle0XPos_D < XRes-PaddleWidth / 2) then
-					Paddle0XPos_N <= Paddle0XPos_D + 1;
+				elsif Player0Right = '0' then
+					if (Paddle0XPos_D < XRes-PaddleWidth / 2) then
+						Paddle0XPos_N <= Paddle0XPos_D + 1;
+					end if;
+			
+				elsif Player0Left = '0' then
+					if (Paddle0XPos_D > PaddleWidth / 2) then
+						Paddle0XPos_N <= Paddle0XPos_D - 1;
+					end if;
 				end if;
 			
-			elsif Player0Left = '0' then
-				if (Paddle0XPos_D > PaddleWidth / 2) then
-					Paddle0XPos_N <= Paddle0XPos_D - 1;
-				end if;
-			end if;
-			
-			if (Player1Right = '0' and Player1Left = '0') then
-				null;
+				if (Player1Right = '0' and Player1Left = '0') then
+					null;
 				
-			elsif Player1Right = '0' then
-				if (Paddle1XPos_D < XRes-PaddleWidth / 2) then
-					Paddle1XPos_N <= Paddle1XPos_D + 1;
-				end if;
+				elsif Player1Right = '0' then
+					if (Paddle1XPos_D < XRes-PaddleWidth / 2) then
+						Paddle1XPos_N <= Paddle1XPos_D + 1;
+					end if;
 			
-			elsif Player1Left = '0' then
-				if (Paddle1XPos_D > PaddleWidth / 2) then
-					Paddle1XPos_N <= Paddle1XPos_D - 1;
+				elsif Player1Left = '0' then
+					if (Paddle1XPos_D > PaddleWidth / 2) then
+						Paddle1XPos_N <= Paddle1XPos_D - 1;
+					end if;
 				end if;
 			end if;
 		end if;
