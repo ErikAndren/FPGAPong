@@ -49,8 +49,8 @@ architecture rtl of VgaBall is
 	signal UpdateCnt_N, UpdateCnt_D : word(UpdateCnt-1 downto 0);
 	signal SampleCnt_N, SampleCnt_D : word(bits(Frequency)-1 downto 0);
 	--
-	signal BallPosX_D, BallPosX_N : word(VgaHVideoW-1 downto 0);
-	signal BallPosY_D, BallPosY_N : word(VgaVVideoW-1 downto 0);
+	type BallPos is array (2-1 downto 0) of word(maxval(VgaHVideoW, VgaVVideoW)-1 downto 0);
+	signal BallPos_D, BallPos_N : BallPos;
 	--
 	constant PaddleWidth   : positive := 40;
 	--constant PaddleWidth : positive := 640;
@@ -59,7 +59,6 @@ architecture rtl of VgaBall is
 	constant X : natural := 0;
 	constant Y : natural := 1;
 	--
-	
 	--
 	constant BallSz : positive := 6;
 	--
@@ -100,8 +99,8 @@ begin
 	begin
 		if Rst_N = '0' then
 			SampleCnt_D    <= (others => '0');
-			BallPosX_D     <= conv_word(XRes / 2, BallPosX_D'length);
-			BallPosY_D     <= conv_word(YRes / 2, BallPosY_D'length);
+			BallPos_D(X)   <= conv_word(XRes / 2, BallPos_D(X)'length);
+			BallPos_D(Y)   <= conv_word(YRes / 2, BallPos_D(Y)'length);
 			Paddle0XPos_D  <= conv_word(XRes / 2, Paddle0XPos_D'length);
 			Paddle1XPos_D  <= conv_word(XRes / 2, Paddle1XPos_D'length);
 			BallDir_D      <= (others => (others => '0'));
@@ -113,8 +112,7 @@ begin
 			
 		elsif rising_edge(Clk) then
 			SampleCnt_D <= SampleCnt_N;
-			BallPosX_D  <= BallPosX_N;
-			BallPosY_D  <= BallPosY_N;
+			BallPos_D   <= BallPos_N;
 			--
 			BallDir_D <= BallDir_N;
 			--
@@ -132,7 +130,7 @@ begin
 	end process;
 
 	SampleAsync : process (SampleCnt_D,
-									BallPosX_D, BallPosY_D, 
+									BallPos_D, 
 									Player0Right, Player0Left, 
 									Paddle0XPos_D, Paddle1XPos_D, 
 									BallDir_D,
@@ -142,8 +140,7 @@ begin
 									UpdateCnt_D, Bounces_D
 								)
 	begin
-		BallPosX_N     <= BallPosX_D;
-		BallPosY_N     <= BallPosY_D;
+		BallPos_N     <= BallPos_D;
 		SampleCnt_N    <= SampleCnt_D + 1;
 		BallDir_N      <= BallDir_D;
 		Player0Score_N <= Player0Score_D;
@@ -187,24 +184,24 @@ begin
 		
 			if RedOr((UpVec(conv_integer(BallSpeed_D(Y))) and UpdateCnt_D)) = '1' then
 				if (BallDir_D(Y) = GOING_UP) then 
-					BallPosY_N <= BallPosY_D - 1;
+					BallPos_N(Y) <= BallPos_D(Y) - 1;
 				elsif (BallDir_D(Y) = GOING_DOWN) then
-					BallPosY_N <= BallPosY_D + 1;
+					BallPos_N(Y) <= BallPos_D(Y) + 1;
 				end if;
 			end if;
 
 			if RedOr((UpVec(conv_integer(BallSpeed_D(X))) and UpdateCnt_D)) = '1' then
 				if (BallDir_D(X) = GOING_LEFT) then
-					BallPosX_N <= BallPosX_D - 1;
+					BallPos_N(X) <= BallPos_D(X) - 1;
 				elsif (BallDir_D(X) = GOING_RIGHT) then
-					BallPosX_N <= BallPosX_D + 1;
+					BallPos_N(X) <= BallPos_D(X) + 1;
 				end if;
 			end if;	
 
 			-- Bounce on paddle
 			if (BallDir_D(Y) = GOING_UP and 
-			    BallPosY_D >= Paddle0YPos - PaddleDepth / 2 and BallPosY_D <= Paddle0YPos + PaddleDepth / 2 and 
-				 BallPosX_D >= Paddle0XPos_D - PaddleWidth / 2 and BallPosX_D <= Paddle0XPos_D + PaddleWidth / 2) then
+			    BallPos_D(Y) >= Paddle0YPos - PaddleDepth / 2 and BallPos_D(Y) <= Paddle0YPos + PaddleDepth / 2 and 
+				 BallPos_D(X) >= Paddle0XPos_D - PaddleWidth / 2 and BallPos_D(X) <= Paddle0XPos_D + PaddleWidth / 2) then
 				BallDir_N(Y) <= GOING_DOWN;
 				
 				if (Bounces_D < xt1(Bounces_D'length)) then
@@ -222,8 +219,8 @@ begin
 				end if;
 
 			elsif (BallDir_D(Y) = GOING_DOWN and 
-			       BallPosY_D >= Paddle1YPos - PaddleDepth / 2 and BallPosY_D <= Paddle1YPos + PaddleDepth / 2 and 
-					 BallPosX_D >= Paddle1XPos_D - PaddleWidth / 2 and BallPosX_D <= Paddle1XPos_D + PaddleWidth / 2) then
+			       BallPos_D(Y) >= Paddle1YPos - PaddleDepth / 2 and BallPos_D(Y) <= Paddle1YPos + PaddleDepth / 2 and 
+					 BallPos_D(X) >= Paddle1XPos_D - PaddleWidth / 2 and BallPos_D(X) <= Paddle1XPos_D + PaddleWidth / 2) then
 				BallDir_N(Y) <= GOING_UP;
 
 				if (Bounces_D < xt1(Bounces_D'length)) then
@@ -242,7 +239,7 @@ begin
 			end if;
 
 			-- Score for player 1
-			if (BallPosY_D = 0) then
+			if (BallPos_D(Y) = 0) then
 				if (Player1Score_D >= 9) then
 					Player1Score_N <= (others => '0');
 				else
@@ -250,15 +247,15 @@ begin
 				end if;
 				
 				-- Reset state, give ball to losing player
-				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
-				BallPosY_N <= conv_word(YRes-20 / 2, BallPosY_N'length);
+				BallPos_N(X) <= conv_word(XRes / 2, BallPos_N(X)'length);
+				BallPos_N(Y) <= conv_word(YRes-20 / 2, BallPos_N(Y)'length);
 				BallDir_N(X) <= "00";
 				BallDir_N(Y) <= GOING_UP;
 				Bounces_N  <= (others => '0');
 			end if;
 			
 			-- Score for player 0
-			if (BallPosY_D = YRes-1) then
+			if (BallPos_D(Y) = YRes-1) then
 				if Player0Score_D >= 9 then
 					Player0Score_N <= (others => '0');
 				else
@@ -266,8 +263,8 @@ begin
 				end if;
 				
 				-- Reset state, give ball to losing player
-				BallPosX_N <= conv_word(XRes / 2, BallPosX_N'length);
-				BallPosY_N <= conv_word(20, BallPosY_N'length);
+				BallPos_N(X) <= conv_word(XRes / 2, BallPos_N(X)'length);
+				BallPos_N(Y) <= conv_word(20, BallPos_N(Y)'length);
 				--
 				BallDir_N(X) <= "00";
 				BallDir_N(Y) <= GOING_DOWN;
@@ -275,9 +272,9 @@ begin
 			end if;
 			
 			-- Bounce on walls
-			if (BallPosX_D = 0) then
+			if (BallPos_D(X) = 0) then
 				BallDir_N(X) <= GOING_RIGHT;
-			elsif (BallPosX_D = XRes-1) then
+			elsif (BallPos_D(X) = XRes-1) then
 				BallDir_N(X) <= GOING_LEFT;
 			end if;
 
@@ -314,18 +311,18 @@ begin
 		end if;
 	end process;	
 
-	Draw : process (XCord, YCord, BallPosX_D, BallPosY_D, Paddle0XPos_D, Paddle1XPos_D, Player0Score_D, Player1Score_D)
+	Draw : process (XCord, YCord, BallPos_D, Paddle0XPos_D, Paddle1XPos_D, Player0Score_D, Player1Score_D)
 	begin
 		Red   <= '0';
 		Green <= '0';
 		Blue  <= '0';
 		
-		if XCord >= BallPosX_D - BallSz / 2 and XCord <= BallPosX_D + BallSz / 2 and
-			YCord >= BallPosY_D - BallSz / 2 and YCord <= BallPosY_D + BallSz / 2 and
-			not (XCord = BallPosX_D - BallSz / 2 and YCord = BallPosY_D - BallSz / 2) and
-			not (XCord = BallPosX_D + BallSz / 2 and YCord = BallPosY_D + BallSz / 2) and
-			not (XCord = BallPosX_D - BallSz / 2 and YCord = BallPosY_D + BallSz / 2) and
-			not (XCord = BallPosX_D + BallSz / 2 and YCord = BallPosY_D - BallSz / 2)
+		if XCord >= BallPos_D(X) - BallSz / 2 and XCord <= BallPos_D(X) + BallSz / 2 and
+			YCord >= BallPos_D(Y) - BallSz / 2 and YCord <= BallPos_D(Y) + BallSz / 2 and
+			not (XCord = BallPos_D(X) - BallSz / 2 and YCord = BallPos_D(Y) - BallSz / 2) and
+			not (XCord = BallPos_D(X) + BallSz / 2 and YCord = BallPos_D(Y) + BallSz / 2) and
+			not (XCord = BallPos_D(X) - BallSz / 2 and YCord = BallPos_D(Y) + BallSz / 2) and
+			not (XCord = BallPos_D(X) + BallSz / 2 and YCord = BallPos_D(Y) - BallSz / 2)
 			then
 			Red <= '1';	
 		end if;
