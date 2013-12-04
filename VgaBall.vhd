@@ -293,17 +293,17 @@ begin
 			if (RedOr(UpdateCnt_D(8-1 downto 2)) = '0') then
 				-- AI
 				if (AiEnabled_D(0) = '1') and (BallDir_D(Y) = GOING_UP) then
-					if (BallPos_D(X) > Paddle0XPos_D) then
+					if (BallPos_D(X) > (Paddle0XPos_D + PaddleWidth / 2)) then
 						Paddle0XPos_N <= Paddle0XPos_D + 1;
-					elsif (BallPos_D(X) < Paddle0XPos_D) then
+					elsif (BallPos_D(X) < (Paddle0XPos_D - PaddleWidth / 2)) then
 						Paddle0XPos_N <= Paddle0XPos_D - 1;
 					end if;
 				end if;
 				
 				if AiEnabled_D(1) = '1' and BallDir_D(Y) = GOING_DOWN then
-					if (BallPos_D(X) > Paddle1XPos_D) then
+					if (BallPos_D(X) > (Paddle1XPos_D + PaddleWidth / 2)) then
 						Paddle1XPos_N <= Paddle1XPos_D + 1;
-					elsif (BallPos_D(X) < Paddle1XPos_D) then
+					elsif (BallPos_D(X) < (Paddle1XPos_D - PaddleWidth / 2)) then
 						Paddle1XPos_N <= Paddle1XPos_D - 1;
 					end if;
 				end if;
