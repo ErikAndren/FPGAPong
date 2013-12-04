@@ -93,6 +93,8 @@ architecture rtl of VgaBall is
 	signal BallSpeed_N, BallSpeed_D : BallSpeed;
 	--
 	signal Bounces_N, Bounces_D : word(8-1 downto 0);
+	--
+	signal AiEnabled_N, AiEnabled_D : word(2-1 downto 0);
 
 begin	
 	Sampler : process (Clk, Rst_N)
@@ -109,6 +111,7 @@ begin
 			BallSpeed_D    <= (others => (others => '0'));
 			UpdateCnt_D    <= (others => '0');
 			Bounces_D      <= (others => '0');
+			AiEnabled_D    <= (others => '1');
 			
 		elsif rising_edge(Clk) then
 			SampleCnt_D <= SampleCnt_N;
@@ -126,6 +129,7 @@ begin
 			UpdateCnt_D <= UpdateCnt_N;
 			--
 			Bounces_D   <= Bounces_N;
+			AiEnabled_D <= AiEnabled_N;
 		end if;
 	end process;
 
@@ -137,7 +141,8 @@ begin
 									Player0Score_D, Player1Score_D, 
 									Player1Right, Player1Left,
 									BallSpeed_D, Rand,
-									UpdateCnt_D, Bounces_D
+									UpdateCnt_D, Bounces_D,
+									AiEnabled_D
 								)
 	begin
 		BallPos_N     <= BallPos_D;
@@ -156,6 +161,8 @@ begin
 		--
 		BallSpeed_N(X) <= BallSpeed_D(X);
 		BallSpeed_N(Y) <= BallSpeed_D(Y);
+		--
+		AiEnabled_N    <= AiEnabled_D;
 
 		if SampleCnt_D = Frequency then
 			SampleCnt_N    <= (others => '0');
@@ -280,6 +287,23 @@ begin
 
 			-- Add throttle factor
 			if (RedOr(UpdateCnt_D(8-1 downto 2)) = '0') then
+				-- AI
+				if (AiEnabled_D(0) = '1') and (BallDir_D(Y) = GOING_UP) then
+					if (BallPos_D(X) > Paddle0XPos_D) then
+						Paddle0XPos_N <= Paddle0XPos_D + 1;
+					elsif (BallPos_D(X) < Paddle0XPos_D) then
+						Paddle0XPos_N <= Paddle0XPos_D - 1;
+					end if;
+				end if;
+				
+				if AiEnabled_D(1) = '1' and BallDir_D(Y) = GOING_DOWN then
+					if (BallPos_D(X) > Paddle1XPos_D) then
+						Paddle1XPos_N <= Paddle1XPos_D + 1;
+					elsif (BallPos_D(X) < Paddle1XPos_D) then
+						Paddle1XPos_N <= Paddle1XPos_D - 1;
+					end if;
+				end if;
+			
 				if (Player0Right = '0' and Player0Left = '0') then
 					null;
 				
