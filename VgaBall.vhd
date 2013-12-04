@@ -258,6 +258,8 @@ begin
 				BallPos_N(Y) <= conv_word(YRes-20 / 2, BallPos_N(Y)'length);
 				BallDir_N(X) <= "00";
 				BallDir_N(Y) <= GOING_UP;
+				BallSpeed_N(X) <= (others => '0');
+				BallSpeed_N(Y) <= (others => '0');
 				Bounces_N  <= (others => '0');
 			end if;
 			
@@ -275,6 +277,8 @@ begin
 				--
 				BallDir_N(X) <= "00";
 				BallDir_N(Y) <= GOING_DOWN;
+				BallSpeed_N(X) <= (others => '0');
+				BallSpeed_N(Y) <= (others => '0');
 				Bounces_N  <= (others => '0');
 			end if;
 			
