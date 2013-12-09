@@ -312,11 +312,13 @@ begin
 					null;
 				
 				elsif Player0Right = '0' then
+					AiEnabled_N(0) <= '0';
 					if (Paddle0XPos_D < XRes-PaddleWidth / 2) then
 						Paddle0XPos_N <= Paddle0XPos_D + 1;
 					end if;
 			
 				elsif Player0Left = '0' then
+					AiEnabled_N(0) <= '0';
 					if (Paddle0XPos_D > PaddleWidth / 2) then
 						Paddle0XPos_N <= Paddle0XPos_D - 1;
 					end if;
@@ -326,11 +328,13 @@ begin
 					null;
 				
 				elsif Player1Right = '0' then
+					AiEnabled_N(1) <= '0';
 					if (Paddle1XPos_D < XRes-PaddleWidth / 2) then
 						Paddle1XPos_N <= Paddle1XPos_D + 1;
 					end if;
 			
 				elsif Player1Left = '0' then
+					AiEnabled_N(1) <= '0';
 					if (Paddle1XPos_D > PaddleWidth / 2) then
 						Paddle1XPos_N <= Paddle1XPos_D - 1;
 					end if;
