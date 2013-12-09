@@ -16,6 +16,9 @@ port (
 	Button2      : in bit1;
 	Button3      : in bit1;
 	--
+	Player0PadLeft : in bit1;
+	Player0PadRight : in bit1;
+	--
 	Led0         : out bit1;
 	Led1         : out bit1;
 	Led2         : out bit1;
@@ -79,8 +82,8 @@ begin
 			--
 			Rand => Rand,
 			--
-			Player0Right => Button0,
-			Player0Left  => Button1,
+			Player0Right => Player0PadRight,
+			Player0Left  => Player0PadLeft,
 			Player1Right => Button2,
 			Player1Left  => Button3,
 			--
