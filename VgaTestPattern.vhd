@@ -41,11 +41,11 @@ architecture rtl of VgaTestPattern is
 	
 	signal XCord : word(VgaHVideoW-1 downto 0);
 	signal YCord : word(VgaVVideoW-1 downto 0);
-	
+
 	signal Rand : word(16-1 downto 0);
 begin
-	Led0 <= Button0;
-	Led1 <= Button1;
+	Led0 <= Player0PadLeft and Button0;
+	Led1 <= Player0PadRight and Button1;
 	Led2 <= Button2;
 	Led3 <= Button3;
 
