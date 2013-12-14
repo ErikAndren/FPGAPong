@@ -16,14 +16,16 @@ port (
 	Button2      : in bit1;
 	Button3      : in bit1;
 	--
-	Player0PadLeft : in bit1;
+	Player0PadLeft  : in bit1;
 	Player0PadRight : in bit1;
 	--
 	Led0         : out bit1;
 	Led1         : out bit1;
 	Led2         : out bit1;
 	Led3         : out bit1;
-	--		
+	--
+	Buzz         : out bit1;
+	--
 	HSyncN : out bit1;
 	VSyncN : out bit1;
 	Red    : out bit1;
@@ -44,8 +46,8 @@ architecture rtl of VgaTestPattern is
 
 	signal Rand : word(16-1 downto 0);
 begin
-	Led0 <= Player0PadLeft and Button0;
-	Led1 <= Player0PadRight and Button1;
+	Led0 <= Player0PadLeft;
+	Led1 <= Player0PadRight;
 	Led2 <= Button2;
 	Led3 <= Button3;
 
@@ -86,6 +88,8 @@ begin
 			Player0Left  => Player0PadLeft,
 			Player1Right => Button2,
 			Player1Left  => Button3,
+			--
+			Buzz   => Buzz,
 			--
 			XCord  => Xcord,
 			YCord  => Ycord,

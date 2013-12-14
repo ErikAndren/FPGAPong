@@ -24,6 +24,8 @@ port (
 	XCord  : in word(VgaHVideoW-1 downto 0);		
 	YCord  : in word(VgaVVideoW-1 downto 0);
 	--
+	Buzz   : out bit1;
+	--
 	Red    : out bit1;
 	Green  : out bit1;
 	Blue   : out bit1
@@ -95,6 +97,8 @@ architecture rtl of VgaBall is
 	signal Bounces_N, Bounces_D : word(8-1 downto 0);
 	--
 	signal AiEnabled_N, AiEnabled_D : word(2-1 downto 0);
+	--
+	signal BuzzCnt_N, BuzzCnt_D : word(UpdateCnt/4-1 downto 0);
 
 begin	
 	Sampler : process (Clk, Rst_N)
@@ -112,6 +116,7 @@ begin
 			UpdateCnt_D    <= (others => '0');
 			Bounces_D      <= (others => '0');
 			AiEnabled_D    <= (others => '1');
+			BuzzCnt_D      <= (others => '0');
 			
 		elsif rising_edge(Clk) then
 			SampleCnt_D <= SampleCnt_N;
@@ -130,6 +135,8 @@ begin
 			--
 			Bounces_D   <= Bounces_N;
 			AiEnabled_D <= AiEnabled_N;
+			--
+			BuzzCnt_D <= BuzzCnt_N;
 		end if;
 	end process;
 
@@ -142,7 +149,7 @@ begin
 									Player1Right, Player1Left,
 									BallSpeed_D, Rand,
 									UpdateCnt_D, Bounces_D,
-									AiEnabled_D
+									AiEnabled_D, BuzzCnt_D
 								)
 	begin
 		BallPos_N     <= BallPos_D;
@@ -163,12 +170,25 @@ begin
 		BallSpeed_N(Y) <= BallSpeed_D(Y);
 		--
 		AiEnabled_N    <= AiEnabled_D;
+		--
+		BuzzCnt_N      <= BuzzCnt_D;
+		--
+		if (BuzzCnt_D > 0) then
+			Buzz <= '1';
+		else
+			Buzz <= '0';
+		end if;
 
 		if SampleCnt_D = Frequency then
 			SampleCnt_N    <= (others => '0');
 			UpdateCnt_N    <= UpdateCnt_D(UpdateCnt_D'high-1 downto 0) & '0';
 			if (RedOr(UpdateCnt_D) = '0') then
 				UpdateCnt_N <= xt0(UpdateCnt_N'length-1) & '1';
+			end if;
+			
+			if (BuzzCnt_D > 0) then
+				Buzz      <= '1';
+				BuzzCnt_N <= BuzzCnt_D + 1;
 			end if;
 
 			-- X direction is mandantory
@@ -210,6 +230,7 @@ begin
 			    BallPos_D(Y) >= Paddle0YPos - PaddleDepth / 2 and BallPos_D(Y) <= Paddle0YPos + PaddleDepth / 2 and 
 				 BallPos_D(X) >= Paddle0XPos_D - PaddleWidth / 2 and BallPos_D(X) <= Paddle0XPos_D + PaddleWidth / 2) then
 				BallDir_N(Y) <= GOING_DOWN;
+				BuzzCnt_N <= BuzzCnt_D + 1;
 				
 				if (Bounces_D < xt1(Bounces_D'length)) then
 					Bounces_N <= Bounces_D + 1;
@@ -229,6 +250,7 @@ begin
 			       BallPos_D(Y) >= Paddle1YPos - PaddleDepth / 2 and BallPos_D(Y) <= Paddle1YPos + PaddleDepth / 2 and 
 					 BallPos_D(X) >= Paddle1XPos_D - PaddleWidth / 2 and BallPos_D(X) <= Paddle1XPos_D + PaddleWidth / 2) then
 				BallDir_N(Y) <= GOING_UP;
+				BuzzCnt_N <= BuzzCnt_D + 1;
 
 				if (Bounces_D < xt1(Bounces_D'length)) then
 					Bounces_N <= Bounces_D + 1;
