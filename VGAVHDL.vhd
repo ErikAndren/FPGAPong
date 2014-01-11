@@ -24,9 +24,7 @@ entity VGAVHDL is
 	);
 end entity;
 
-architecture rtl of VGAVHDL is
-	signal PixelClk : bit1;
-	
+architecture rtl of VGAVHDL is	
 	constant hsync_end  : positive := 95;
 	constant hdat_begin : positive := 143;
 	constant hdat_end   : positive := 783;
@@ -46,17 +44,11 @@ architecture rtl of VGAVHDL is
 	
 	signal dat_act : bit1;
 begin
-	ClkDiv : process (Clk)
-	begin
-		if rising_edge(Clk) then
-			PixelClk <= not PixelClk;
-		end if;
-	end process;
 	
 	hcount_ov <= '1' when hcount = hpixel_end else '0';
-	HCnt : process (PixelClk)
+	HCnt : process (Clk)
 	begin
-		if rising_edge(PixelClk) then
+		if rising_edge(Clk) then
 			if (hcount_ov = '1') then
 				hcount <= (others => '0');
 			else
@@ -66,9 +58,9 @@ begin
 	end process;
 	
 	vcount_ov <= '1' when vcount = vline_end else '0';
-	VCnt : process (PixelClk)
+	VCnt : process (Clk)
 	begin
-		if rising_edge(PixelClk) then
+		if rising_edge(Clk) then
 			if (hcount_ov = '1') then
 				if (vcount_ov = '1') then
 						vcount <= (others => '0');
@@ -86,12 +78,8 @@ begin
 	Hsync <= '1' when hcount > hsync_end else '0';
 	Vsync <= '1' when vcount > vsync_end else '0';
 	--
-	-- RedOut <= '0' when dat_act = '0' else Red;
-	-- GreenOut <= '0' when dat_act = '0' else Green;
-	--BlueOut <= '0' when dat_act = '0' else Blue;
-	RedOut <= '0' when dat_act = '0' else '1';
-	GreenOut <= '0';
-	BlueOut <= '0';
-	
-	
+	RedOut <= '0' when dat_act = '0' else Red;
+	GreenOut <= '0' when dat_act = '0' else Green;
+	BlueOut <= '0' when dat_act = '0' else Blue;
+
 end architecture rtl;
