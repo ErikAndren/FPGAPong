@@ -55,7 +55,6 @@ architecture rtl of VgaBall is
 	signal BallPos_D, BallPos_N : BallPos;
 	--
 	constant PaddleWidth   : positive := 40;
-	--constant PaddleWidth : positive := 640;
 	constant PaddleDepth : positive := 4;
 	--
 	constant X : natural := 0;
