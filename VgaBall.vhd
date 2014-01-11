@@ -66,8 +66,8 @@ architecture rtl of VgaBall is
 	constant XRes : positive := 640;
 	constant YRes : positive := 480;
 	--
-	constant Paddle0YPos : positive := 10;
-	constant Paddle1YPos : positive := YRes - 10;
+	constant Paddle0YPos : positive := vdat_begin + 10;
+	constant Paddle1YPos : positive := vdat_end - 10;
 	--
 	signal Paddle0XPos_N, Paddle0XPos_D : word(bits(XRes)-1 downto 0);
 	signal Paddle1XPos_N, Paddle1XPos_D : word(bits(XRes)-1 downto 0);
