@@ -7,7 +7,7 @@
 # (including device programming or simulation files), and any 
 # associated documentation or information are expressly subject 
 # to the terms and conditions of the Altera Program License 
-# Subscription Agreement, Altera MegaCore Function License 
+# Subscription Agreement, Altera MegaCore Function License x
 # Agreement, or other applicable license agreement, including, 
 # without limitation, that your use is for the sole purpose of 
 # programming logic devices manufactured by Altera and sold by 
@@ -36,17 +36,15 @@
 # -------------------------------------------------------------------------- #
 
 
-set_global_assignment -name FAMILY "Cyclone III"
-set_global_assignment -name DEVICE EP3C25F324C6
+set_global_assignment -name FAMILY "Cyclone II"
+set_global_assignment -name DEVICE EP2C8Q208C8
 set_global_assignment -name TOP_LEVEL_ENTITY VgaTestPattern
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "17:28:54  SEPTEMBER 05, 2013"
-set_global_assignment -name LAST_QUARTUS_VERSION 13.1
+set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
-set_global_assignment -name DEVICE_FILTER_PIN_COUNT 324
-set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 6
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
 set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (VHDL)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
@@ -56,13 +54,13 @@ set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
-set_location_assignment PIN_B9 -to Clk
-set_location_assignment PIN_N10 -to HSyncN -comment HSMC_D12
-set_location_assignment PIN_N2 -to ARst_N
-set_location_assignment PIN_H6 -to Red -comment HSMC_D0
-set_location_assignment PIN_K17 -to VSyncN -comment HSMC_D16
-set_location_assignment PIN_N8 -to Blue -comment HSMC_D8
-set_location_assignment PIN_T1 -to Green
+set_location_assignment PIN_23 -to Clk
+set_location_assignment PIN_152 -to HSyncN
+set_location_assignment PIN_144 -to ARst_N
+set_location_assignment PIN_149 -to Red
+set_location_assignment PIN_161 -to VSyncN
+set_location_assignment PIN_150 -to Blue
+set_location_assignment PIN_151 -to Green
 set_global_assignment -name VHDL_FILE tb.vhd
 set_global_assignment -name VHDL_FILE ../Lib/ResetSync.vhd
 set_global_assignment -name VHDL_FILE VgaTestPattern.vhd
@@ -71,32 +69,16 @@ set_global_assignment -name VHDL_FILE VgaPack.vhd
 set_global_assignment -name QIP_FILE PixelClkPll.qip
 set_global_assignment -name VHDL_FILE VgaGenerator.vhd
 set_global_assignment -name VHDL_FILE VgaTestPatternGen.vhd
-set_instance_assignment -name IO_STANDARD "2.5 V" -to Blue
-set_instance_assignment -name IO_STANDARD "2.5 V" -to Green
-set_instance_assignment -name IO_STANDARD "2.5 V" -to HSyncN
-set_instance_assignment -name IO_STANDARD "2.5 V" -to Red
-set_instance_assignment -name IO_STANDARD "2.5 V" -to VSyncN
 set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
 set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
-set_instance_assignment -name IO_STANDARD "2.5 V" -to ARst_N
-set_instance_assignment -name IO_STANDARD "2.5 V" -to Clk
-set_global_assignment -name IOBANK_VCCIO 2.5V -section_id 2
-set_global_assignment -name IOBANK_VCCIO 2.5V -section_id 1
-set_global_assignment -name IOBANK_VCCIO 2.5V -section_id 8
-set_global_assignment -name IOBANK_VCCIO 2.5V -section_id 7
-set_global_assignment -name IOBANK_VCCIO 2.5V -section_id 6
 set_global_assignment -name SDC_FILE VgaTestPattern.sdc
 
 set_global_assignment -name VHDL_FILE VgaBall.vhd
-set_location_assignment PIN_F1 -to Button0
-set_location_assignment PIN_F2 -to Button1
 set_global_assignment -name VHDL_FILE CharPack.vhd
-set_location_assignment PIN_B10 -to Button3
-set_location_assignment PIN_A10 -to Button2
 set_global_assignment -name SAVE_DISK_SPACE OFF
 set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS OFF
 set_global_assignment -name SMART_RECOMPILE ON
@@ -108,12 +90,32 @@ set_global_assignment -name OPTIMIZE_POWER_DURING_FITTING OFF
 set_global_assignment -name USE_LOGICLOCK_CONSTRAINTS_IN_BALANCING OFF
 set_global_assignment -name FITTER_EFFORT "FAST FIT"
 set_global_assignment -name VHDL_FILE ../Lib/LFSR.vhd
-set_location_assignment PIN_P12 -to Led1
-set_location_assignment PIN_N12 -to Led2
-set_location_assignment PIN_N9 -to Led3
-set_location_assignment PIN_P13 -to Led0
-set_location_assignment PIN_P2 -to Player0PadLeft
-set_location_assignment PIN_T3 -to Player0PadRight
 set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
-set_location_assignment PIN_L3 -to Buzz
+set_global_assignment -name QIP_FILE PixelClkPll_C2.qip
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Player0PadRight
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Player0PadLeft
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Led3
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Led2
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Led1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Led0
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Buzz
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Button3
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Button2
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Button1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Button0
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Green
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Blue
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VSyncN
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Red
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ARst_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HSyncN
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Clk
+set_location_assignment PIN_145 -to Button1
+set_location_assignment PIN_146 -to Button2
+set_location_assignment PIN_147 -to Button3
+set_location_assignment PIN_113 -to Led0
+set_location_assignment PIN_114 -to Led1
+set_location_assignment PIN_115 -to Led2
+set_location_assignment PIN_116 -to Led3
+set_location_assignment PIN_30 -to Buzz
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

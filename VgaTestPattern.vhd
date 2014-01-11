@@ -60,12 +60,11 @@ begin
 	);
 	
 	ARst <= not ARst_N;
-	PixelClkPll0 : entity work.PixelClkPll
+	PixelClkPll0 : entity work.PixelClkPll_C2
 	port map (
 		inclk0 => Clk,
 		areset => ARst,
-		c0     => PixelClk,
-		Locked => open
+		c0     => PixelClk
 	);
 
 	--
