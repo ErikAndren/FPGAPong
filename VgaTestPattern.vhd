@@ -96,25 +96,6 @@ begin
 			Blue   => Blue_N
 		);
 
---	VgaGen : entity work.VgaGenerator
---	port map (
---		Clk      => PixelClk,
---		Rst_N    => Rst_N,
---		--
---		Red      => Red_N,
---		Green    => Green_N,
---		Blue     => Blue_N,
---		--
---		XCord    => XCord,
---		YCord    => YCord,
---		--
---		HSyncN   => HSyncN,
---		VSyncN   => VSyncN,
---		RedOut   => Red,
---		GreenOut => Green,
---		BlueOut  => Blue
---	);
-
 	VgaGen : entity work.VGAVHDL
 	port map (
 		Clk => PixelClk,
