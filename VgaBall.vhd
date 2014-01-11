@@ -304,9 +304,9 @@ begin
 			end if;
 			
 			-- Bounce on walls
-			if (BallPos_D(X) = 0) then
+			if (BallPos_D(X) = hdat_begin) then
 				BallDir_N(X) <= GOING_RIGHT;
-			elsif (BallPos_D(X) = XRes-1) then
+			elsif (BallPos_D(X) = hdat_end) then
 				BallDir_N(X) <= GOING_LEFT;
 			end if;
 
