@@ -4,6 +4,7 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 use work.Types.all;
+use work.VgaPack.all;
 
 entity VGAVHDL is 
 	port (
@@ -24,16 +25,7 @@ entity VGAVHDL is
 	);
 end entity;
 
-architecture rtl of VGAVHDL is	
-	constant hsync_end  : positive := 95;
-	constant hdat_begin : positive := 143;
-	constant hdat_end   : positive := 783;
-	constant hpixel_end : positive := 799;
-	constant vsync_end  : positive := 1;
-	constant vdat_begin : positive := 34;
-	constant vdat_end   : positive := 514;
-	constant vline_end  : positive := 524;
-	
+architecture rtl of VGAVHDL is		
 	signal hCount : word(10-1 downto 0);
 	signal vCount : word(10-1 downto 0);
 	signal data : word(3-1 downto 0);

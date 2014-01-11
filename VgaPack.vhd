@@ -5,6 +5,15 @@ use ieee.std_logic_arith.all;
 use work.Types.all;
 
 package VgaPack is 	
+	constant hsync_end  : positive := 95;
+	constant hdat_begin : positive := 143;
+	constant hdat_end   : positive := 783;
+	constant hpixel_end : positive := 799;
+	constant vsync_end  : positive := 1;
+	constant vdat_begin : positive := 34;
+	constant vdat_end   : positive := 514;
+	constant vline_end  : positive := 524;
+
 	constant VgaClkFreq : integer  := 25000000;
 
 	constant VgaHFrontPorch  : positive := 22;
