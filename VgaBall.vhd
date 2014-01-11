@@ -54,7 +54,7 @@ architecture rtl of VgaBall is
 	type BallPos is array (2-1 downto 0) of word(maxval(VgaHVideoW, VgaVVideoW)-1 downto 0);
 	signal BallPos_D, BallPos_N : BallPos;
 	--
-	constant PaddleWidth   : positive := 40;
+	constant PaddleWidth : positive := 40;
 	constant PaddleDepth : positive := 4;
 	--
 	constant X : natural := 0;
@@ -63,8 +63,8 @@ architecture rtl of VgaBall is
 	--
 	constant BallSz : positive := 6;
 	--
-	constant XRes : positive := 640;
-	constant YRes : positive := 480;
+	constant XRes : positive := hpixel_end;
+	constant YRes : positive := vline_end;
 	--
 	constant Paddle0YPos : positive := vdat_begin + 10;
 	constant Paddle1YPos : positive := vdat_end - 10;
@@ -83,10 +83,10 @@ architecture rtl of VgaBall is
 	signal Player0Score_N, Player0Score_D : word(4-1 downto 0);
 	signal Player1Score_N, Player1Score_D : word(4-1 downto 0);
 	--
-	constant ScoreBoard0XOffs : natural := 4;
+	constant ScoreBoard0XOffs : natural := hdat_begin + 4;
 	constant ScoreBoard0YOffs : natural := YRes / 2 - 16;
 	--
-	constant ScoreBoard1XOffs : natural := 4;
+	constant ScoreBoard1XOffs : natural := hdat_begin + 4;
 	constant ScoreBoard1YOffs : natural := YRes / 2 + 9;
 	--
 	constant MaxSpeed : positive := 3;

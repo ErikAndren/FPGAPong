@@ -9,6 +9,7 @@ package VgaPack is
 	constant hdat_begin : positive := 143;
 	constant hdat_end   : positive := 783;
 	constant hpixel_end : positive := 799;
+	--
 	constant vsync_end  : positive := 1;
 	constant vdat_begin : positive := 34;
 	constant vdat_end   : positive := 514;
