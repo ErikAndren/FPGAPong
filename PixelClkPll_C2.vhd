@@ -136,7 +136,7 @@ BEGIN
 		clk0_multiply_by => 1,
 		clk0_phase_shift => "0",
 		compensate_clock => "CLK0",
-		inclk0_input_frequency => 20000,
+		inclk0_input_frequency => 50000,
 		intended_device_family => "Cyclone II",
 		lpm_hint => "CBX_MODULE_PREFIX=PixelClkPll_C2",
 		lpm_type => "altpll",

@@ -5,7 +5,7 @@ use ieee.std_logic_arith.all;
 use work.Types.all;
 
 package VgaPack is 	
-	constant VgaClkFreq : integer  := 25175000;
+	constant VgaClkFreq : integer  := 25000000;
 
 	constant VgaHFrontPorch  : positive := 22;
 	constant VgaHVideo       : positive := 640;
